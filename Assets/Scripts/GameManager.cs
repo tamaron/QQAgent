@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
@@ -10,10 +11,10 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     [SerializeField] GameObject textGroup;
     protected override void Awake()
     {
+        base.Awake();
         initGroup.SetActive(true);
         textGroup.SetActive(false);
         textGroup.GetComponent<CanvasGroup>().alpha = 0;
-        base.Awake();
         Setup.Subscribe(_ =>
         {
             textGroup.SetActive(true);

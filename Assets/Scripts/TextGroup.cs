@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -8,14 +9,15 @@ public class TextGroup : MonoBehaviour
 {
     [SerializeField] float fadeDuration;
     [Range(0, 1)] [SerializeField] float ScalePeakTime;
-    [SerializeField] Vector3 normalScale;
-    [SerializeField] Vector3 maxScale;
+    [SerializeField] float normalScale;
+    [SerializeField] float maxScale;
 
     Sequence _sequence;
 
     private void Start()
     {
         _sequence = DOTween.Sequence();
+
         var canvasGroup = GetComponent<CanvasGroup>();
         var rectTransform = GetComponent<RectTransform>();
         canvasGroup

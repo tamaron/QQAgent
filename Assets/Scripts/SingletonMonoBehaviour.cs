@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 649
+using UnityEngine;
 using System;
 
 public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -16,7 +17,7 @@ public class LogoFadein : MonoBehaviour
         _sequence.Append(
             canvusGroup
                 .DOFade(0, fadeDuration)
-                .SetDelay(fadeDuration)
+                .SetDelay(fadeStartTime)
             )
         .OnComplete(() =>
         {
