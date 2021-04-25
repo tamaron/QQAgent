@@ -21,7 +21,6 @@ public class LogoFadein : MonoBehaviour
         .OnComplete(() =>
         {
             GameManager.Instance.Setup.OnNext(Unit.Default);
-            Debug.Log("Comp");
         });
     }
 
