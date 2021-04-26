@@ -26,7 +26,8 @@ public class LogoView : MonoBehaviour
             )
         .OnComplete(() =>
         {
-            GameManager.Instance.Setup.OnNext(Unit.Default);
+            // Entry => WaitingInput
+            GameManager.Instance.State.Value = GameState.WaitingInput;
         });
     }
 

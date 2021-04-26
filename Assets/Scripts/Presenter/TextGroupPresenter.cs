@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
+using System.Threading.Tasks;
 using TMPro;
 
 public class TextGroupPresenter : MonoBehaviour
@@ -14,15 +15,21 @@ public class TextGroupPresenter : MonoBehaviour
     {
         model = GetComponent<TextGroupModel>();
         view = GetComponent<TextGroupView>();
+        Initiialize();
+    }
 
+    private void Initiialize()
+    {
         view.inputField
             .onEndEdit
-            .AsObservable() 
-            .Subscribe(text =>
+            .AsObservable()
+            .Where(text => text.Length > 0)
+            .Subscribe(async text =>
             {
-                Debug.Log(text);
-                view.inputField.text = "";
-                view.inputField.Select();
+                GameManager.Instance.State.Value = GameState.WaitingOutput;
+                Task<string> task = Task.Run(() => model.GetResult(text));
+                view.resultText.text = await task;
+                GameManager.Instance.State.Value = GameState.Output;
             }).AddTo(this);
     }
 }

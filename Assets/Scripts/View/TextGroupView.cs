@@ -12,23 +12,56 @@ public class TextGroupView : MonoBehaviour
     [Range(0, 1)] [SerializeField] float ScalePeakTime;
     [SerializeField] float normalScale;
     [SerializeField] float maxScale;
+    [SerializeField] CanvasGroup resultTextCanvasGroup;
+    [SerializeField] float resultTextFadeTime;
+    public TextMeshProUGUI resultText;
     public TMP_InputField inputField;
 
-    Sequence _sequence;
-
-    private void Awake()
-    {
-        
-    }
+    Sequence _popupSequence;
+    Tween resultFadeTween;
 
     private void Start()
     {
-        Popup();
+        GameManager.Instance.State
+            .Subscribe(s =>
+            {
+                // text interactive
+                if(s == GameState.WaitingInput)
+                {
+                    inputField.interactable = true;
+                }
+                else
+                {
+                    inputField.interactable = false;
+                }
+
+                // text reset
+                if(s == GameState.WaitingInput)
+                {
+                    inputField.text = "";
+                }
+
+                // answer enable
+                if(s == GameState.Output)
+                {
+                    resultFadeTween.Complete();
+                    resultFadeTween =
+                        resultTextCanvasGroup.DOFade(1, resultTextFadeTime);
+                }
+
+                if (s == GameState.WaitingInput)
+                {
+                    resultFadeTween.Complete();
+                    resultFadeTween =
+                        resultTextCanvasGroup.DOFade(0, resultTextFadeTime);
+                }
+
+            }).AddTo(this);
     }
 
-    void Popup()
+    public void Popup()
     {
-        _sequence = DOTween.Sequence();
+        _popupSequence = DOTween.Sequence();
 
         var canvasGroup = GetComponent<CanvasGroup>();
         var rectTransform = GetComponent<RectTransform>();
@@ -36,7 +69,7 @@ public class TextGroupView : MonoBehaviour
             .DOFade(1, fadeDuration)
             .From(0);
 
-        _sequence
+        _popupSequence
             .Append(
                 rectTransform
                 .DOScale(

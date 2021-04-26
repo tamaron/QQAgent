@@ -1,18 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using DG.Tweening;
+using System.Threading.Tasks;
 
 public class TextGroupModel : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] string errorMessage; 
+    public string GetResult(string text)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+        Thread.Sleep(5000);
+        return errorMessage;
+    }    
 }
