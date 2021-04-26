@@ -6,6 +6,13 @@ using UniRx;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
+    static int _width = 1024, _height = 768;
+    [RuntimeInitializeOnLoadMethod]
+    static void OnRuntimeMethodLoad()
+    {
+        Screen.SetResolution(_width, _height, false);
+    }
+
     public Subject<Unit> Setup = new Subject<Unit>();
     [SerializeField] GameObject initGroup;
     [SerializeField] GameObject textGroup;
