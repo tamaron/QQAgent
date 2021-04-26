@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class CubeManager : MonoBehaviour
+public class Cube : MonoBehaviour
 {
     Tween _tween;
     float _tweenPlaySpeed = 1f;
