@@ -41,7 +41,7 @@ public class TextGroupView : MonoBehaviour
                     inputField.text = "";
                 }
 
-                // answer enable
+                // result text enable
                 if(s == GameState.Output)
                 {
                     resultFadeTween.Complete();
