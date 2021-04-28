@@ -53,7 +53,8 @@ public class TextGroupView : MonoBehaviour
                 {
                     resultFadeTween.Complete();
                     resultFadeTween =
-                        resultTextCanvasGroup.DOFade(0, resultTextFadeTime);
+                        resultTextCanvasGroup.DOFade(0, resultTextFadeTime)
+                        .OnComplete(() => resultText.text = "");
                 }
 
             }).AddTo(this);
