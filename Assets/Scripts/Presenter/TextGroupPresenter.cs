@@ -20,7 +20,7 @@ public class TextGroupPresenter : MonoBehaviour
         _view.inputField
             .onEndEdit
             .AsObservable()
-            .Where(text => text.Length > 0)
+            .Where(text => !string.IsNullOrEmpty(text))
             .Subscribe(async text =>
             {
                 GameManager.Instance.State.Value = GameState.WaitingOutput;
