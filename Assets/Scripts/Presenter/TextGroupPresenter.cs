@@ -2,34 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using Cysharp.Threading.Tasks;
 using UniRx.Triggers;
 using System.Threading.Tasks;
 using TMPro;
 
 public class TextGroupPresenter : MonoBehaviour
 {
-    TextGroupModel model;
-    TextGroupView view;
+    TextGroupModel _model;
+    TextGroupView _view;
 
     private void Awake()
     {
-        model = GetComponent<TextGroupModel>();
-        view = GetComponent<TextGroupView>();
-        Initiialize();
-    }
-
-    private void Initiialize()
-    {
-        view.inputField
+        _model = GetComponent<TextGroupModel>();
+        _view = GetComponent<TextGroupView>();
+        
+        _view.inputField
             .onEndEdit
             .AsObservable()
-            .Where(text => text.Length > 0)
+            .Where(text => !string.IsNullOrEmpty(text))
             .Subscribe(async text =>
             {
                 GameManager.Instance.State.Value = GameState.WaitingOutput;
-                Task<string> task = Task.Run(() => model.GetResult(text));
-                view.resultText.text = await task;
+                _view.resultText.text = await _model.GetResultAsync(text);
                 GameManager.Instance.State.Value = GameState.Output;
             }).AddTo(this);
+        
     }
 }
