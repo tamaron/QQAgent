@@ -10,22 +10,22 @@ using TMPro;
 public class TextGroupPresenter : MonoBehaviour
 {
     TextGroupModel _model;
-    TextGroupView _view;
+    TextGroupInput _viewInput;
+    TextGroupOutput _viewOutput;
 
     private void Awake()
     {
         _model = GetComponent<TextGroupModel>();
-        _view = GetComponent<TextGroupView>();
-        
-        _view.inputField
-            .onEndEdit
-            .AsObservable()
+        _viewInput = GetComponent<TextGroupInput>();
+        _viewOutput = GetComponent<TextGroupOutput>();
+
+        _viewInput.OnInputFieldTextChanged()
             .Where(text => !string.IsNullOrEmpty(text))
             .Subscribe(async text =>
             {
-                GameManager.Instance.State.Value = GameState.WaitingOutput;
-                _view.resultText.text = await _model.GetResultAsync(text);
-                GameManager.Instance.State.Value = GameState.Output;
+                GameStateModel.Instance.State.Value = GameState.WaitingOutput;
+                _viewOutput.ResultText = await _model.GetResultAsync(text);
+                GameStateModel.Instance.State.Value = GameState.Output;
             }).AddTo(this);
         
     }

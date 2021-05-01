@@ -31,12 +31,12 @@ public class TextGroupModel : MonoBehaviour
                     uwr.SetRequestHeader("x-rapidapi-key", "");
                     uwr.SetRequestHeader("x-rapidapi-host", "community-open-weather-map.p.rapidapi.com");
 
-
                     await uwr.SendWebRequest();
                     JsonData jsonData = JsonMapper.ToObject(uwr.downloadHandler.text);
-                    result = $"{(string)jsonData["name"]} の天気" +
+                    result =
+                        $"{(string)jsonData["name"]} の天気" +
                         $"\r\n" +
-                        $"{(string)jsonData["weather"][0]["main"]} : {(string)jsonData["weather"][0]["description"]}" + 
+                        $"天気 : {(string)jsonData["weather"][0]["main"]}" + 
                         $"\r\n" +
                         $"気温 : { (int)((double)jsonData["main"]["temp"] / 10)}度" +
                         $"\r\n" +

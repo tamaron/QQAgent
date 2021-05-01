@@ -20,7 +20,7 @@ public class CubeView : MonoBehaviour
     [SerializeField] float backDuration;
     private void Start()
     {
-        GameManager.Instance.State
+        GameStateModel.Instance.State
             .Subscribe(s =>
             {
                 if (_moveTween != null) _moveTween.Complete();
@@ -60,7 +60,7 @@ public class CubeView : MonoBehaviour
                             );
                         break;
                     case GameState.Output:
-                        if (_moveTween != null) _moveTween.Complete();
+                        if (_moveTween != null) _moveTween.Kill();
                         _moveTween = DOTween.Sequence();
                         _moveTween
                             .Join(
