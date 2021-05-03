@@ -7,26 +7,28 @@ using UniRx.Triggers;
 using System.Threading.Tasks;
 using TMPro;
 
-public class TextGroupPresenter : MonoBehaviour
+namespace QQAgent.TextGroup
 {
-    TextGroupModel _model;
-    TextGroupInput _viewInput;
-    TextGroupOutput _viewOutput;
-
-    private void Awake()
+    public class TextGroupPresenter : MonoBehaviour
     {
-        _model = GetComponent<TextGroupModel>();
-        _viewInput = GetComponent<TextGroupInput>();
-        _viewOutput = GetComponent<TextGroupOutput>();
+        TextGroupModel _model;
+        TextGroupInput _viewInput;
+        TextGroupOutput _viewOutput;
 
-        _viewInput.OnInputFieldTextChanged()
-            .Where(text => !string.IsNullOrEmpty(text))
-            .Subscribe(async text =>
-            {
-                GameStateModel.Instance.State.Value = GameState.WaitingOutput;
-                _viewOutput.ResultText = await _model.GetResultAsync(text);
-                GameStateModel.Instance.State.Value = GameState.Output;
-            }).AddTo(this);
-        
+        private void Awake()
+        {
+            _model = new TextGroupModel();
+            _viewInput = GetComponent<TextGroupInput>();
+            _viewOutput = GetComponent<TextGroupOutput>();
+
+            _viewInput.OnInputFieldTextChanged()
+                .Subscribe(async text =>
+                {
+                    GameStateModel.Instance.State.Value = GameState.WaitingOutput;
+                    _viewOutput.ResultText = await _model.GetResultAsync(text);
+                    GameStateModel.Instance.State.Value = GameState.Output;
+                }).AddTo(this);
+
+        }
     }
 }

@@ -10,7 +10,7 @@ public class TextGroupInput : MonoBehaviour
 {
     [SerializeField] private TMP_InputField inputField;
 
-    public IObservable<string> OnInputFieldTextChanged() => inputField.onEndEdit.AsObservable();
+    public IObservable<string> OnInputFieldTextChanged() => inputField.onEndEdit.AsObservable().Where(text => !string.IsNullOrEmpty(text));
     public string InputFieldText
     {
         get { return inputField.text; }
