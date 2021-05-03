@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
@@ -17,6 +19,7 @@ namespace QQAgent.UI.Presenter
         TextGroupModel _model;
         TextGroupInput _viewInput;
         TextGroupOutput _viewOutput;
+        [SerializeField] long processingTimeAdjustMilliseconds;
 
         private void Awake()
         {
@@ -28,10 +31,23 @@ namespace QQAgent.UI.Presenter
                 .Subscribe(async text =>
                 {
                     GameStateModel.Instance.State.Value = GameState.WaitingOutput;
+                    var sw = new Stopwatch();
+                    sw.Start();
                     _viewOutput.ResultText = await _model.GetResultAsync(text);
+                    sw.Stop();
+                    await ProcessingTimeAdjust(sw.ElapsedMilliseconds);
                     GameStateModel.Instance.State.Value = GameState.Output;
                 }).AddTo(this);
 
         }
+
+        private async UniTask<Unit> ProcessingTimeAdjust(long ms)
+        {
+            long waitTime = processingTimeAdjustMilliseconds - ms;
+            if (waitTime <= 0) return Unit.Default;
+            await UniTask.Delay((int)waitTime);
+            return Unit.Default;
+        }
     }
 }
+
