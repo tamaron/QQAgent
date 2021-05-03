@@ -6,41 +6,46 @@ using UnityEngine;
 using DG.Tweening;
 using UniRx;
 using TMPro;
+using QQAgent.State;
 
-public class TextGroupOutput : MonoBehaviour
+
+namespace QQAgent.UI.View
 {
-    [SerializeField] CanvasGroup outputTextCanvasGroup;
-    [SerializeField] float outputTextFadeTime;
-    [SerializeField] private TextMeshProUGUI outputText;
-    Tween outputFadeTween;
-
-    public string ResultText
+    public class TextGroupOutput : MonoBehaviour
     {
-        get { return outputText.text; }
-        set { outputText.text = value; }
-    }
+        [SerializeField] CanvasGroup outputTextCanvasGroup;
+        [SerializeField] float outputTextFadeTime;
+        [SerializeField] private TextMeshProUGUI outputText;
+        Tween outputFadeTween;
 
-    private void Start()
-    {
-        GameStateModel.Instance.State
-            .Subscribe(s =>
-            {
+        public string ResultText
+        {
+            get { return outputText.text; }
+            set { outputText.text = value; }
+        }
+
+        private void Start()
+        {
+            GameStateModel.Instance.State
+                .Subscribe(s =>
+                {
                 // result text enable
-                if(s == GameState.Output)
-                {
-                    outputFadeTween.Complete();
-                    outputFadeTween =
-                        outputTextCanvasGroup.DOFade(1, outputTextFadeTime);
-                }
+                if (s == GameState.Output)
+                    {
+                        outputFadeTween.Complete();
+                        outputFadeTween =
+                            outputTextCanvasGroup.DOFade(1, outputTextFadeTime);
+                    }
 
-                if (s == GameState.WaitingInput)
-                {
-                    outputFadeTween.Complete();
-                    outputFadeTween =
-                        outputTextCanvasGroup.DOFade(0, outputTextFadeTime)
-                        .OnComplete(() => ResultText = "");
-                }
+                    if (s == GameState.WaitingInput)
+                    {
+                        outputFadeTween.Complete();
+                        outputFadeTween =
+                            outputTextCanvasGroup.DOFade(0, outputTextFadeTime)
+                            .OnComplete(() => ResultText = "");
+                    }
 
-            }).AddTo(this);
+                }).AddTo(this);
+        }
     }
 }

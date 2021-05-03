@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 
-namespace QQAgent.TextGroup
+namespace QQAgent.UI.Model
 {
 
     /// <summary>

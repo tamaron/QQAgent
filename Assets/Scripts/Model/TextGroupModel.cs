@@ -11,16 +11,18 @@ using DG.Tweening;
 using UniRx;
 using Cysharp.Threading.Tasks;
 
-namespace QQAgent.TextGroup
+namespace QQAgent.UI.Model
 {
     public class TextGroupModel
     {
         public async UniTask<string> GetResultAsync(string text)
         {
-            // コンストラクト時，categorizer.Generatorに適切なMessageTypeCategorizerの派生クラスが代入される
+            // TODO:カテゴライズに時間がかかるかもしれないのでできれば非同期にしたい
+            // コンストラクト時，categorizer.Generatorに適切なResultTextGeneratorの派生クラスが代入される
             MessageTypeCategorizer categorizer = new MessageTypeCategorizer(text);
             ResultTextGenerator generator = categorizer.Generator;
-            await generator.Generate();
+            // 応答文生成
+            await generator.GenerateAsync();
             return generator.Result;
         }
     }

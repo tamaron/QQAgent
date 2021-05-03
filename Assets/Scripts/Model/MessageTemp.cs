@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace QQAgent.TextGroup
+namespace QQAgent.UI.Model
 {
     static public class MessageTemp
     {

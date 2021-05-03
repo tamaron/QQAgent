@@ -8,14 +8,14 @@ using UniRx;
 using Cysharp.Threading.Tasks;
 using LitJson;
 
-namespace QQAgent.TextGroup
+namespace QQAgent.UI.Model
 {
     /// <summary>
     /// NoneMessageを生成する
     /// </summary>
     public class NoneGenerator : ResultTextGenerator
     {
-        public async override UniTask<Unit> Generate()
+        public async override UniTask<Unit> GenerateAsync()
         {
             Result = MessageTemp.NoneMessage;
             return Unit.Default;
@@ -28,7 +28,7 @@ namespace QQAgent.TextGroup
 
     public class WeatherGenerator : ResultTextGenerator
     {
-        public async override UniTask<Unit> Generate()
+        public async override UniTask<Unit> GenerateAsync()
         {
             string url = "https://community-open-weather-map.p.rapidapi.com" +
                 "/weather?q=%E4%BB%99%E5%8F%B0&lang=en&units=%22metric%22%20or%20%22imperial%22";

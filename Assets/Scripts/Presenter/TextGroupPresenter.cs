@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
+using QQAgent.State;
+using QQAgent.UI.Model;
+using QQAgent.UI.View;
 using UniRx.Triggers;
 using System.Threading.Tasks;
 using TMPro;
 
-namespace QQAgent.TextGroup
+namespace QQAgent.UI.Presenter
 {
     public class TextGroupPresenter : MonoBehaviour
     {

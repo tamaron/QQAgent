@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class ScreenSizeInitializer
+namespace QQAgent.SetUp
 {
-    static private int _width = 1024, _height = 768;
-
-    [RuntimeInitializeOnLoadMethod]
-    static void OnRuntimeMethodLoad()
+    public static class ScreenSizeInitializer
     {
-        Screen.SetResolution(_width, _height, false);
+        static private int _width = 1024, _height = 768;
+
+        [RuntimeInitializeOnLoadMethod]
+        static void OnRuntimeMethodLoad()
+        {
+            Screen.SetResolution(_width, _height, false);
+        }
     }
 }
