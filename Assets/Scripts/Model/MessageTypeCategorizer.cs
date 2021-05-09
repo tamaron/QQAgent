@@ -21,7 +21,7 @@ namespace QQAgent.UI.Model
             if (Regex.IsMatch(text, "天気")) Generator = new WeatherGenerator();
             else Generator = new NoneGenerator();
         }
-        public ResultTextGenerator Generator { get; private set; }
+        public OutputGenerator Generator { get; private set; }
     }
 
 }

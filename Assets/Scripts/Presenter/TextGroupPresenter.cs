@@ -17,17 +17,17 @@ namespace QQAgent.UI.Presenter
     public class TextGroupPresenter : MonoBehaviour
     {
         TextGroupModel _model;
-        TextGroupInput _viewInput;
+        IInputSubmitter _viewInput;
         TextGroupOutput _viewOutput;
         [SerializeField] long processingTimeAdjustMilliseconds;
 
         private void Awake()
         {
             _model = new TextGroupModel();
-            _viewInput = GetComponent<TextGroupInput>();
+            _viewInput = new InputIntegrator();
             _viewOutput = GetComponent<TextGroupOutput>();
 
-            _viewInput.OnInputFieldTextChanged()
+            _viewInput.OnInputSubmitted()
                 .Subscribe(async text =>
                 {
                     GameStateModel.Instance.State.Value = GameState.WaitingOutput;

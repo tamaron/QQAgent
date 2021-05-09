@@ -13,7 +13,7 @@ namespace QQAgent.UI.Model
     /// <summary>
     /// NoneMessageを生成する
     /// </summary>
-    public class NoneGenerator : ResultTextGenerator
+    public class NoneGenerator : OutputGenerator
     {
         public async override UniTask<Unit> GenerateAsync()
         {
@@ -26,7 +26,7 @@ namespace QQAgent.UI.Model
     /// 天気予報を生成する
     /// </summary>
 
-    public class WeatherGenerator : ResultTextGenerator
+    public class WeatherGenerator : OutputGenerator
     {
         public async override UniTask<Unit> GenerateAsync()
         {

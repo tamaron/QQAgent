@@ -11,7 +11,7 @@ namespace QQAgent.UI.Model
     ///  応答生成する基底クラス
     ///  GenerateAsync()を呼び出すとResultに応答文が格納される
     /// </summary>
-    abstract public class ResultTextGenerator
+    abstract public class OutputGenerator
     {
         public string Result { get; protected set; }
         abstract public UniTask<Unit> GenerateAsync();

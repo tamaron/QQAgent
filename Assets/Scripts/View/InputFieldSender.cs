@@ -9,15 +9,18 @@ using QQAgent.State;
 
 namespace QQAgent.UI.View
 {
-    public class TextGroupInput : MonoBehaviour
+    public class InputFieldSender : SingletonMonoBehaviour<InputFieldSender>, IInputSender, IInputDisplay
     {
         [SerializeField] private TMP_InputField inputField;
 
-        public IObservable<string> OnInputFieldTextChanged() => inputField.onEndEdit.AsObservable().Where(text => !string.IsNullOrEmpty(text));
-        public string InputFieldText
+        public IObservable<string> OnInputSent() => 
+            inputField.onEndEdit.
+            AsObservable().
+            Where(text => !string.IsNullOrEmpty(text));
+        public string DisPlayText
         {
-            get { return inputField.text; }
-            set { inputField.text = value; }
+            get => inputField.text;
+            set => inputField.text = value;
         }
 
         private void Start()
@@ -42,7 +45,7 @@ namespace QQAgent.UI.View
                 .Where(s => s == GameState.WaitingInput)
                 .Subscribe(s =>
                 {
-                    InputFieldText = "";
+                    DisPlayText = "";
                 }).AddTo(this);
         }
     }
