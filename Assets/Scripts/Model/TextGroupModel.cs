@@ -15,7 +15,7 @@ namespace QQAgent.UI.Model
 {
     public class TextGroupModel
     {
-        public async UniTask<string> GetResultAsync(string text)
+        public async UniTask<string> GetOutputAsync(string text)
         {
             // TODO:カテゴライズに時間がかかるかもしれないのでできれば非同期にしたい
             // コンストラクト時，categorizer.Generatorに適切なResultTextGeneratorの派生クラスが代入される

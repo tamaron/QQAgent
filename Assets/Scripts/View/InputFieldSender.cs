@@ -17,7 +17,7 @@ namespace QQAgent.UI.View
             inputField.onEndEdit.
             AsObservable().
             Where(text => !string.IsNullOrEmpty(text));
-        public string DisPlayText
+        public string DisplayText
         {
             get => inputField.text;
             set => inputField.text = value;
@@ -45,7 +45,7 @@ namespace QQAgent.UI.View
                 .Where(s => s == GameState.WaitingInput)
                 .Subscribe(s =>
                 {
-                    DisPlayText = "";
+                    DisplayText = "";
                 }).AddTo(this);
         }
     }

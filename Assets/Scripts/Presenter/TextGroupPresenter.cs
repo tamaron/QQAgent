@@ -33,7 +33,7 @@ namespace QQAgent.UI.Presenter
                     GameStateModel.Instance.State.Value = GameState.WaitingOutput;
                     var sw = new Stopwatch();
                     sw.Start();
-                    _viewOutput.ResultText = await _model.GetResultAsync(text);
+                    _viewOutput.ResultText = await _model.GetOutputAsync(text);
                     sw.Stop();
                     await ProcessingTimeAdjust(sw.ElapsedMilliseconds);
                     GameStateModel.Instance.State.Value = GameState.Output;

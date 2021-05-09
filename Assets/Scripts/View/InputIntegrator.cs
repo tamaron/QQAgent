@@ -23,9 +23,12 @@ namespace QQAgent.UI.View
         IObservable<string> OnInputSubmitted();
     }
 
+    /// <summary>
+    /// submit‚³‚ê‚½“ü—Í‚ð“ü—Í‰æ–Ê‚É”½‰f‚·‚é
+    /// </summary>
     public interface IInputDisplay
     {
-        string DisPlayText { get; set; }
+        string DisplayText { get; set; }
     }
 
     /// <summary>
@@ -41,16 +44,17 @@ namespace QQAgent.UI.View
         {
             // “ü—Í‚µ‚½•¶Žš‚ð•\Ž¦‚·‚é
             _display = InputFieldSender.Instance;
-            _senders.Add(InputFieldSender.Instance);
 
-            foreach(var sender in _senders)
+            _senders.Add(InputFieldSender.Instance);
+            _senders.Add(StoTSender.Instance);
+
+            foreach (var sender in _senders)
             {
                 sender.OnInputSent()
-                    .Where(txt => !string.IsNullOrEmpty(txt))
                     .Subscribe(txt =>
                     {
                         _submitSubject.OnNext(txt);
-                        _display.DisPlayText = txt;
+                        _display.DisplayText = txt;
                     });
             }
         }

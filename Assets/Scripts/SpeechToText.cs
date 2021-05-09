@@ -17,17 +17,17 @@ namespace QQAgent.Utils
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="U"></typeparam>
-    public interface ITranslate<T, U>
+    public interface ITranslater<T, U>
     {
         UniTask<Unit> Translate(T data);
-        U Transcript { get; }
+        U TranslatedContent { get; }
     }
 
     /// <summary>
     /// 録音機能
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IRecord<T>
+    public interface IRecorder<T>
     {
         T Content { get; }
         bool Recordable { get; }
@@ -38,7 +38,7 @@ namespace QQAgent.Utils
     /// <summary>
     /// AudioClipをテキストに変換する
     /// </summary>
-    public class SpeechToText : ITranslate<AudioClip, string>
+    public class SpeechToText : ITranslater<AudioClip, string>
     {
         const string APIKEY = "";
         const string BASEURl = "https://speech.googleapis.com/v1/speech:recognize";
@@ -47,7 +47,7 @@ namespace QQAgent.Utils
         const string ENCODING = "LINEAR16";
         const string LANGUAGCODE = "ja-JP";
         AudioClip _transData;
-        public string Transcript { get; private set; }
+        public string TranslatedContent { get; private set; }
         public async UniTask<Unit> Translate(AudioClip data)
         {
             _transData = data;
@@ -78,12 +78,12 @@ namespace QQAgent.Utils
                     $"confidence : { response["results"][0]["alternatives"][0]["confidence"]}"
                     );
 
-                Transcript = (string)response["results"][0]["alternatives"][0]["transcript"];
+                TranslatedContent = (string)response["results"][0]["alternatives"][0]["transcript"];
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
-                Transcript = "";
+                TranslatedContent = "";
             }
             return Unit.Default;
         }
@@ -110,18 +110,18 @@ namespace QQAgent.Utils
     /// <summary>
     /// AudioClipの録音を行う
     /// </summary>
-    public class Recorder : IRecord<AudioClip>
+    public class Recorder : IRecorder<AudioClip>
     {
         const int REC_DURATION_SEC = 5;
         const int FLEQUENCY = 16000;
         public bool Recordable { get; private set; }
-        bool _contentAvarable;
+        bool _contentAvalable;
         string _micName;
         AudioClip _content;
 
         public Recorder()
         {
-            _contentAvarable = false;
+            _contentAvalable = false;
             if (Microphone.devices.Length > 0)
             {
                 _micName = Microphone.devices[0];
@@ -136,7 +136,7 @@ namespace QQAgent.Utils
         public AudioClip Content {
             get
             {
-                if (!_contentAvarable)
+                if (!_contentAvalable)
                 {
                     Debug.LogError($"[Error] Content is not available");
                     return null;
@@ -171,7 +171,7 @@ namespace QQAgent.Utils
             }
             Microphone.End(_micName);
             Debug.Log("[REC STOP]");
-            _contentAvarable = true;
+            _contentAvalable = true;
         }
     }
 

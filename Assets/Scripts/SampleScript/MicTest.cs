@@ -18,15 +18,15 @@ namespace QQAgent.Sample
     {
         private void Start()
         {
-            IRecord<AudioClip> recorder = new Recorder();
+            IRecorder<AudioClip> recorder = new Recorder();
             if (!recorder.Recordable) return;
             recorder.RecStart();
             Observable.Timer(TimeSpan.FromSeconds(5)).Subscribe(async _ =>
             {
                 recorder.RecEnd();
-                ITranslate<AudioClip, string> translater = new SpeechToText();
+                ITranslater<AudioClip, string> translater = new SpeechToText();
                 await translater.Translate(recorder.Content);
-                Debug.Log(translater.Transcript);
+                Debug.Log(translater.TranslatedContent);
 
             }).AddTo(this);
         }
