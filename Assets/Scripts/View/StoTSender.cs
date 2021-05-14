@@ -16,7 +16,7 @@ namespace QQAgent.UI.View
             get => button.interactable;
             set => button.interactable = value;
         }
-        public bool Listening { get; set; } = false;
+        public ReactiveProperty<bool> Listening { get; set; } = new ReactiveProperty<bool>(false);
         // StoTPresenterが購読する
         public IObservable<Unit> OnListenStart() =>
             button.onClick
@@ -31,13 +31,39 @@ namespace QQAgent.UI.View
         // 2.Listeningではない
         private void Start()
         {
-            // TODO:毎フレームアップデートせずいい感じに書き直す
-            Observable.EveryUpdate().Subscribe(_ => {
-                if (GameStateModel.Instance.State.Value == GameState.WaitingInput
-                    && !Listening
-                ) Interactable = true;
-                else Interactable = false;
-            }).AddTo(this);
+            var observable = Observable.Create<bool>(observer =>
+            {
+                var disposable = new CompositeDisposable();
+                disposable.Add(
+                    GameStateModel.Instance.State
+                        .Subscribe(state =>
+                        {
+                            if (state == GameState.WaitingInput
+                                    && !Listening.Value
+                                ) observer.OnNext(true);
+                            else observer.OnNext(false);
+                        })
+                );
+                disposable.Add(
+                    Listening
+                        .Subscribe(b =>
+                        {
+                            if (GameStateModel.Instance.State.Value == GameState.WaitingInput && !b
+                                ) observer.OnNext(true);
+                            else observer.OnNext(false);
+                        })
+                );
+                return disposable;
+            });
+
+            observable.Subscribe(b => Interactable = b).AddTo(this);
+
+            //Observable.EveryUpdate().Subscribe(_ => {
+            //    if (GameStateModel.Instance.State.Value == GameState.WaitingInput
+            //        && !Listening.Value
+            //    ) Interactable = true;
+            //    else Interactable = false;
+            //}).AddTo(this);
         }
 
     }

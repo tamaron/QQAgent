@@ -23,14 +23,14 @@ namespace QQAgent.UI.Presenter
             var tokenSource = new CancellationTokenSource();
             StoTSender.OnListenStart().Subscribe(async _ =>
             {
-                StoTSender.Listening = true;
+                StoTSender.Listening.Value = true;
                 var token = tokenSource.Token;
                 string result = await StoTModel.GetSpeechToText(token);
                 if (!(result == null))
                 {
                     StoTSender.OutputSubject.OnNext(result);
                 }
-                StoTSender.Listening = false;
+                StoTSender.Listening.Value = false;
             }).AddTo(this);
         }
     }

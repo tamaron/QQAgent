@@ -18,7 +18,7 @@ namespace QQAgent.UI.View
             inputField.onEndEdit
             .AsObservable()
             .Where(text => !EventSystem.current.alreadySelecting)
-            .Where(text => !StoTSender.Instance.Listening)
+            .Where(text => !StoTSender.Instance.Listening.Value)
             .Where(text => !string.IsNullOrEmpty(text));
         public string DisplayText
         {
