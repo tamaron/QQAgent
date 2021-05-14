@@ -23,8 +23,8 @@ namespace QQAgent.UI.View
             .AsObservable()
             .Where(text => !EventSystem.current.alreadySelecting);
         // StoTPresenter‚ªŒ‹‰Ê‚ð“üŽè‚µ‚½‚Æ‚«‚ÉOnNext‚·‚é
-        public Subject<string> OutputSubject { get; } = new Subject<string>();
-        public IObservable<string> OnInputSent() => OutputSubject.Where(txt => !string.IsNullOrEmpty(txt));
+        public Subject<string> SenderOutputSubject { get; } = new Subject<string>();
+        public IObservable<string> OnInputSent() => SenderOutputSubject.Where(txt => !string.IsNullOrEmpty(txt));
 
         // Interactive‚ªON =>
         // 1.GameState‚ªWaitingInput

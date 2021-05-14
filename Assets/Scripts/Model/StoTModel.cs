@@ -26,8 +26,6 @@ namespace QQAgent.UI.Model
             ITranslater<AudioClip, string> translater = new SpeechToText();
             await translater.Translate(recorder.Content, token);
             return translater.TranslatedContent;
-            //Debug.Log("aaaa");
-            //return "aaaaa";
         }
     }
 }

@@ -28,7 +28,7 @@ namespace QQAgent.UI.Presenter
                 string result = await StoTModel.GetSpeechToText(token);
                 if (!(result == null))
                 {
-                    StoTSender.OutputSubject.OnNext(result);
+                    StoTSender.SenderOutputSubject.OnNext(result);
                 }
                 StoTSender.Listening.Value = false;
             }).AddTo(this);
