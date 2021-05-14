@@ -5,6 +5,9 @@ using System.Text;
 using UnityEngine.Networking;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Cysharp.Threading;
+using System.Threading;
+using System.Threading.Tasks;
 using UniRx;
 using Newtonsoft.Json;
 using LitJson;
@@ -19,7 +22,7 @@ namespace QQAgent.Utils
     /// <typeparam name="U"></typeparam>
     public interface ITranslater<T, U>
     {
-        UniTask<Unit> Translate(T data);
+        UniTask<Unit> Translate(T data, CancellationToken token);
         U TranslatedContent { get; }
     }
 
@@ -40,15 +43,15 @@ namespace QQAgent.Utils
     /// </summary>
     public class SpeechToText : ITranslater<AudioClip, string>
     {
-        const string APIKEY = "";
-        const string BASEURl = "https://speech.googleapis.com/v1/speech:recognize";
-        string _url = BASEURl + "?key=" + APIKEY;
+        const string APIKEY = Credential.CLOUD_SPEECHTOTEXT_API_KEY;
+        const string BASEURL = "https://speech.googleapis.com/v1/speech:recognize";
+        string _url = BASEURL + "?key=" + APIKEY;
         const int FLEQUENCY = 16000;
         const string ENCODING = "LINEAR16";
         const string LANGUAGCODE = "ja-JP";
         AudioClip _transData;
         public string TranslatedContent { get; private set; }
-        public async UniTask<Unit> Translate(AudioClip data)
+        public async UniTask<Unit> Translate(AudioClip data, CancellationToken token)
         {
             _transData = data;
             byte[] bytes = WavUtility.FromAudioClip(_transData);
@@ -80,10 +83,10 @@ namespace QQAgent.Utils
 
                 TranslatedContent = (string)response["results"][0]["alternatives"][0]["transcript"];
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Debug.Log(e.Message);
-                TranslatedContent = "";
+                Debug.Log(exception.Message);
+                TranslatedContent = null;
             }
             return Unit.Default;
         }

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 using UniRx;
 using QQAgent.State;
@@ -14,9 +15,11 @@ namespace QQAgent.UI.View
         [SerializeField] private TMP_InputField inputField;
 
         public IObservable<string> OnInputSent() => 
-            inputField.onEndEdit.
-            AsObservable().
-            Where(text => !string.IsNullOrEmpty(text));
+            inputField.onEndEdit
+            .AsObservable()
+            .Where(text => !EventSystem.current.alreadySelecting)
+            .Where(text => !StoTSender.Instance.Listening)
+            .Where(text => !string.IsNullOrEmpty(text));
         public string DisplayText
         {
             get => inputField.text;
@@ -37,7 +40,6 @@ namespace QQAgent.UI.View
                     {
                         inputField.interactable = false;
                     }
-
                 }).AddTo(this);
 
             // text reset

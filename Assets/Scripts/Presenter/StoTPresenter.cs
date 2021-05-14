@@ -6,6 +6,7 @@ using QQAgent.UI.View;
 using QQAgent.UI.Model;
 using UniRx;
 using Cysharp.Threading.Tasks;
+using System.Threading;
 
 namespace QQAgent.UI.Presenter
 {
@@ -19,10 +20,17 @@ namespace QQAgent.UI.Presenter
         {
             StoTSender = StoTSender.Instance;
             StoTModel = new StoTModel();
-            StoTSender.OnButtonClicked().Subscribe(async _ =>
+            var tokenSource = new CancellationTokenSource();
+            StoTSender.OnListenStart().Subscribe(async _ =>
             {
-                string result = await StoTModel.GetSpeechToText();
-                StoTSender.TextSubject.OnNext(result);
+                StoTSender.Listening = true;
+                var token = tokenSource.Token;
+                string result = await StoTModel.GetSpeechToText(token);
+                if (!(result == null))
+                {
+                    StoTSender.OutputSubject.OnNext(result);
+                }
+                StoTSender.Listening = false;
             }).AddTo(this);
         }
     }

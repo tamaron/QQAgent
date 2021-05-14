@@ -28,6 +28,7 @@ namespace QQAgent.UI.Model
 
     public class WeatherGenerator : OutputGenerator
     {
+        const int CELUSIUS = 273;
         public async override UniTask<Unit> GenerateAsync()
         {
             string url = "https://community-open-weather-map.p.rapidapi.com" +
@@ -36,7 +37,7 @@ namespace QQAgent.UI.Model
             {
                 UnityWebRequest uwr = UnityWebRequest.Get(url);
                 // APIKeyはGitHubにあげないように
-                uwr.SetRequestHeader("x-rapidapi-key", "");
+                uwr.SetRequestHeader("x-rapidapi-key", Credential.OPEN_WEATHER_MAP_APIKEY);
                 uwr.SetRequestHeader("x-rapidapi-host", "community-open-weather-map.p.rapidapi.com");
 
                 await uwr.SendWebRequest();
@@ -46,11 +47,11 @@ namespace QQAgent.UI.Model
                     $"\r\n" +
                     $"天気 : {(string)jsonData["weather"][0]["main"]}" +
                     $"\r\n" +
-                    $"気温 : { (int)((double)jsonData["main"]["temp"] / 10)}度" +
+                    $"気温 : { (int)((double)jsonData["main"]["temp"] - CELUSIUS)}度" +
                     $"\r\n" +
                     $"湿度 : { (int)jsonData["main"]["humidity"]}%" +
                     $"\r\n" +
-                    $"体感温度 : { (int)((double)jsonData["main"]["feels_like"] / 10)}度";
+                    $"体感温度 : { (int)((double)jsonData["main"]["feels_like"] - CELUSIUS)}度";
 
             }
             catch (Exception e)

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UniRx;
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using Newtonsoft.Json;
 using LitJson;
 using QQAgent.WavUtil;
@@ -25,7 +26,9 @@ namespace QQAgent.Sample
             {
                 recorder.RecEnd();
                 ITranslater<AudioClip, string> translater = new SpeechToText();
-                await translater.Translate(recorder.Content);
+                var tokenSource = new CancellationTokenSource();
+                var token = tokenSource.Token;
+                await translater.Translate(recorder.Content, token);
                 Debug.Log(translater.TranslatedContent);
 
             }).AddTo(this);
