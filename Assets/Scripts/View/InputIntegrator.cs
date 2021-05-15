@@ -24,7 +24,7 @@ namespace QQAgent.UI.View
     }
 
     /// <summary>
-    /// submitされた入力を入力画面に反映する
+    /// submitされた入力を画面に反映する
     /// </summary>
     public interface IInputDisplay
     {
@@ -32,13 +32,16 @@ namespace QQAgent.UI.View
     }
 
     /// <summary>
-    /// 最終的にPresenterにUserInputをSubmitする
+    /// Senderから入力文を受け取り，その内容をPresenterにSubmitする
     /// </summary>
     public class InputIntegrator : IInputSubmitter
     {
         Subject<string> _submitSubject = new Subject<string>();
         public IObservable<string> OnInputSubmitted() => _submitSubject;
         IInputDisplay _display;
+        /// <summary>
+        /// Senderの管理
+        /// </summary>
         List<IInputSender> _senders = new List<IInputSender>();
         public InputIntegrator()
         {
@@ -47,7 +50,7 @@ namespace QQAgent.UI.View
 
             _senders.Add(InputFieldSender.Instance);
             _senders.Add(StoTSender.Instance);
-
+            // 各々のSenderを購読する
             foreach (var sender in _senders)
             {
                 sender.OnInputSent()

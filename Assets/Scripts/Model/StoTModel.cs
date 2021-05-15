@@ -17,7 +17,6 @@ namespace QQAgent.UI.Model
             IRecorder<AudioClip> recorder = new Recorder();
             if (!recorder.Recordable)
             {
-                Debug.LogError("利用可能なマイクがありません");
                 return null;
             }
             recorder.RecStart();

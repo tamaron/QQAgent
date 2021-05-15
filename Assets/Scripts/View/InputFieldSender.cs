@@ -10,6 +10,9 @@ using QQAgent.State;
 
 namespace QQAgent.UI.View
 {
+    /// <summary>
+    /// InputFieldの入力をSendする(Submitされた時にその入力内容を反映する)
+    /// </summary>
     public class InputFieldSender : SingletonMonoBehaviour<InputFieldSender>, IInputSender, IInputDisplay
     {
         [SerializeField] private TMP_InputField inputField;
@@ -18,7 +21,7 @@ namespace QQAgent.UI.View
             inputField.onEndEdit
             .AsObservable()
             .Where(text => !EventSystem.current.alreadySelecting)
-            .Where(text => !StoTSender.Instance.Listening.Value)
+            .Where(text => !SenderControl.Instance.Listening.Value)
             .Where(text => !string.IsNullOrEmpty(text));
         public string DisplayText
         {

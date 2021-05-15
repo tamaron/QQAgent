@@ -37,7 +37,7 @@ namespace QQAgent.UI.Model
             {
                 UnityWebRequest uwr = UnityWebRequest.Get(url);
                 // APIKeyはGitHubにあげないように
-                uwr.SetRequestHeader("x-rapidapi-key", Credential.OPEN_WEATHER_MAP_APIKEY);
+                uwr.SetRequestHeader("x-rapidapi-key", Credential.OPEN_WEATHER_MAP_API_KEY);
                 uwr.SetRequestHeader("x-rapidapi-host", "community-open-weather-map.p.rapidapi.com");
 
                 await uwr.SendWebRequest();
