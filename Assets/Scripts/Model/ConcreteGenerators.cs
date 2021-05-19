@@ -15,7 +15,7 @@ namespace QQAgent.UI.Model
     /// </summary>
     public class NoneGenerator : OutputGenerator
     {
-        public async override UniTask<Unit> GenerateAsync()
+        public async override UniTask<Unit> GenerateAsync(string text)
         {
             Result = MessageTemp.NoneMessage;
             return Unit.Default;
@@ -25,11 +25,10 @@ namespace QQAgent.UI.Model
     /// <summary>
     /// 天気予報を生成する
     /// </summary>
-
     public class WeatherGenerator : OutputGenerator
     {
         const int CELUSIUS = 273;
-        public async override UniTask<Unit> GenerateAsync()
+        public async override UniTask<Unit> GenerateAsync(string text)
         {
             string url = "https://community-open-weather-map.p.rapidapi.com" +
                 "/weather?q=%E4%BB%99%E5%8F%B0&lang=en&units=%22metric%22%20or%20%22imperial%22";
@@ -125,5 +124,16 @@ namespace QQAgent.UI.Model
             public int cod { get; set; }
         }
 
+    }
+
+    /// <summary>
+    /// だじゃれ判定を行う
+    /// </summary>
+    public class PunGenerator : OutputGenerator
+    {
+        public override UniTask<Unit> GenerateAsync(string text)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

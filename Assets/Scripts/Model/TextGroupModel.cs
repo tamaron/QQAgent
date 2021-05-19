@@ -17,9 +17,8 @@ namespace QQAgent.UI.Model
     {
         public async UniTask<string> GetOutputAsync(string text)
         {
-            // TODO:カテゴライズに時間がかかるかもしれないのでできれば非同期にしたい
-            // コンストラクト時，categorizer.Generatorに適切なResultTextGeneratorの派生クラスが代入される
-            MessageTypeCategorizer categorizer = new MessageTypeCategorizer(text);
+            InputCategorizer categorizer = new InputCategorizer();
+            await categorizer.CategorizeAsync(text);
             OutputGenerator generator = categorizer.Generator;
             // 応答文生成
             await generator.GenerateAsync();

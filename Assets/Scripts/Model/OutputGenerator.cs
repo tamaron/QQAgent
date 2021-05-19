@@ -14,7 +14,7 @@ namespace QQAgent.UI.Model
     abstract public class OutputGenerator
     {
         public string Result { get; protected set; }
-        abstract public UniTask<Unit> GenerateAsync();
+        abstract public UniTask<Unit> GenerateAsync(string text = null);
     }
 
 }
