@@ -68,6 +68,7 @@ namespace QQAgent.UI.Model
     {
         public bool CanUse { get; set; }
 
+        // TODO 天気に関するワードや地名取得をMecabで行う
         public async UniTask<Unit> JudgeAsync(string text)
         {
             CanUse = Regex.IsMatch(text, "天気");
