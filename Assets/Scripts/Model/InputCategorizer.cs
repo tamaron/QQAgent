@@ -28,9 +28,8 @@ namespace QQAgent.UI.Model
             judgeList.Add(new NoneJudge());
             foreach(var judge in judgeList)
             {
-                Debug.Log(judge);
                 await judge.JudgeAsync(text);
-                if (judge.CanUse)
+                if (judge.IsMatch)
                 {
                     this.Generator = judge.Generator();
                     return Unit.Default;
@@ -48,17 +47,17 @@ namespace QQAgent.UI.Model
     public interface IJudgeable
     {
         public UniTask<Unit> JudgeAsync(string text = null);
-        public bool CanUse { get; }
+        public bool IsMatch { get; }
         public OutputGenerator Generator();
     }
 
     public class NoneJudge : IJudgeable
     {
-        public bool CanUse { get; set; }
+        public bool IsMatch { get; set; }
 
         public async UniTask<Unit> JudgeAsync(string text)
         {
-            CanUse = true;
+            IsMatch = true;
             return Unit.Default;
         }
         public OutputGenerator Generator() => new NoneGenerator();
@@ -66,12 +65,12 @@ namespace QQAgent.UI.Model
 
     public class WeatherJudge : IJudgeable
     {
-        public bool CanUse { get; set; }
+        public bool IsMatch { get; set; }
 
         // TODO 天気に関するワードや地名取得をMecabで行う
         public async UniTask<Unit> JudgeAsync(string text)
         {
-            CanUse = Regex.IsMatch(text, "天気");
+            IsMatch = Regex.IsMatch(text, "天気");
             return Unit.Default;
         }
         public OutputGenerator Generator() => new WeatherGenerator();
@@ -79,12 +78,12 @@ namespace QQAgent.UI.Model
 
     public class PunJudge : IJudgeable
     {
-        public bool CanUse { get; set; }
+        public bool IsMatch { get; set; }
 
         public async UniTask<Unit> JudgeAsync(string text)
         {
 
-            CanUse = false;
+            IsMatch = false;
             return Unit.Default;
         }
         public OutputGenerator Generator() => new PunGenerator();

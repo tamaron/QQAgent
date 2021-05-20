@@ -16,8 +16,13 @@ namespace QQAgent.Sample
         // Start is called before the first frame update
         async void Start()
         {
-            MorphemeAnalyzer analyzer = new MorphemeAnalyzer();
-            await analyzer.Analyze(null);
+            IMorphemeAnalyzer analyzer = new MorphemeAnalyzer();
+            await analyzer.Analyze("’|’N‚©‚ª—§‚Ä‚©‚¯‚½B’|—§‚ÄŠ|‚¯‚½‚©‚Á‚½‚©‚ç—§‚ÄŠ|‚¯‚½B");
+            MorphemeHandler morphemeHandler = new MorphemeHandler();
+            if (analyzer.Successed)
+            {
+                Debug.Log(await morphemeHandler.GetReadingAsync(analyzer.Result));
+            }
         }
     }
 }

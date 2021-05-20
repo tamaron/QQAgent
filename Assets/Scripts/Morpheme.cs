@@ -1,6 +1,6 @@
-#pragma warning disable CS1998
 using System;
 using System.Text;
+using System.Linq;
 using System.Net.Http;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +9,8 @@ using UnityEngine.Networking;
 using System.Text.RegularExpressions;
 using UniRx;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
+
 
 namespace QQAgent.Morpheme
 {
@@ -17,53 +19,67 @@ namespace QQAgent.Morpheme
     {
         public UniTask<Unit> Analyze(string text);
         public bool Successed { get; }
-        public Morpheme Result { get; }
+        public List<Clause> Result { get; }
     }
 
-    public interface IMorphemeHandler
+
+    public class Clause
     {
-
+        public string surface { get; set; }
+        public string pos { get; set; }
+        public string pos1 { get; set; }
+        public string baseform { get; set; }
+        public string reading { get; set; }
+        public string pronounciation { get; set; }
+        public string pos2 { get; set; }
+        public string conjugatedform { get; set; }
+        public string inflection { get; set; }
     }
-
-    public class Morpheme
-    {
-
-    }
-
+    
     public class MorphemeAnalyzer : IMorphemeAnalyzer
     {
-        public Morpheme Result { get; set; }
+        public List<Clause> Result { get; set; } 
         public bool Successed{ get; set; }
 
         public async UniTask<Unit> Analyze(string text)
         {
-            // RequestÇçÏê¨
-            UnityWebRequest uwr = new UnityWebRequest();
-            uwr.method = UnityWebRequest.kHttpVerbGET;
-            uwr.url = Credential.MECAB_API_URLBASE + "%E4%BB%8A%E6%97%A5%E3%81%AF%E9%9B%A8%E3%81%A0";
-            uwr.SetRequestHeader("Content-Type", "application/json");
-            uwr.downloadHandler = new DownloadHandlerBuffer();
+            HttpClient httpClient = new HttpClient();
+            var parameters = new Dictionary<string, string>()
+            {
+                { "sentence", text },
+            };
             try
             {
-                await uwr.SendWebRequest();
-                Debug.Log(Regex.Unescape(uwr.downloadHandler.text));
+                var encoded = new FormUrlEncodedContent(parameters);
+                var parameter = await encoded.ReadAsStringAsync();
+                HttpResponseMessage response = await httpClient.GetAsync(
+                    $"{Credential.MECAB_API_URLBASE}" +
+                    $"?" +
+                    $"{parameter}"
+                );
+                string jsonData = await response.Content.ReadAsStringAsync();
+                jsonData = Regex.Unescape(jsonData);
+                Result = JsonConvert.DeserializeObject<List<Clause>>(jsonData);
+                Successed = true;
             }
-            catch (Exception exception)
+            catch(Exception exception)
             {
                 Debug.LogError(exception.Message);
+                Successed = false;
             }
-
-            //HttpClient httpClient = new HttpClient();
-            //HttpResponseMessage response = await httpClient.GetAsync(Credential.MECAB_API_URLBASE + "%E4%BB%8A%E6%97%A5%E3%81%AF%E9%9B%A8%E3%81%A0");
-            //string ret = Regex.Unescape(await response.Content.ReadAsStringAsync());
-            //Debug.Log(ret);
             return Unit.Default;
         }
     }
 
-    public class MorphemeHandler : IMorphemeHandler
+    public class MorphemeHandler
     {
-
+        public async UniTask<string> GetReadingAsync(List<Clause> morpheme) =>
+            await UniTask.Run(() => 
+                morpheme
+                .ConvertAll(e => e.reading)
+                .Aggregate(new StringBuilder(), (result, next) => result.Append(next))
+                .ToString()
+            );
     }
 
 }
