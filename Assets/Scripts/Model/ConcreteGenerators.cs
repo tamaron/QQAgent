@@ -127,13 +127,19 @@ namespace QQAgent.UI.Model
     }
 
     /// <summary>
-    /// だじゃれ判定を行う
+    /// だじゃれの評価をいう
     /// </summary>
     public class PunGenerator : OutputGenerator
     {
-        public override UniTask<Unit> GenerateAsync(string text)
+        private string _longestPun;
+        public PunGenerator(string pun) => _longestPun = pun;
+
+        public override async UniTask<Unit> GenerateAsync(string text)
         {
-            throw new NotImplementedException();
+            Result =
+                $"{_longestPun} が掛かっているのか...\r\n" +
+                $"実に面白い...";
+            return Unit.Default;
         }
     }
 }

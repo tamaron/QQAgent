@@ -18,7 +18,7 @@ namespace QQAgent.Morpheme
     public interface IMorphemeAnalyzer
     {
         public UniTask<Unit> Analyze(string text);
-        public bool Successed { get; }
+        public bool Succeeded { get; }
         public List<Clause> Result { get; }
     }
 
@@ -39,7 +39,7 @@ namespace QQAgent.Morpheme
     public class MorphemeAnalyzer : IMorphemeAnalyzer
     {
         public List<Clause> Result { get; set; } 
-        public bool Successed{ get; set; }
+        public bool Succeeded{ get; set; }
 
         public async UniTask<Unit> Analyze(string text)
         {
@@ -60,12 +60,12 @@ namespace QQAgent.Morpheme
                 string jsonData = await response.Content.ReadAsStringAsync();
                 jsonData = Regex.Unescape(jsonData);
                 Result = JsonConvert.DeserializeObject<List<Clause>>(jsonData);
-                Successed = true;
+                Succeeded = true;
             }
             catch(Exception exception)
             {
                 Debug.LogError(exception.Message);
-                Successed = false;
+                Succeeded = false;
             }
             return Unit.Default;
         }

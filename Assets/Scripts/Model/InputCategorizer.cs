@@ -6,6 +6,8 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using UniRx;
 using Cysharp.Threading.Tasks;
+using QQAgent.Morpheme;
+using QQAgent.Pun;
 
 namespace QQAgent.UI.Model
 {
@@ -76,16 +78,37 @@ namespace QQAgent.UI.Model
         public OutputGenerator Generator() => new WeatherGenerator();
     }
 
+
+    /// <summary>
+    /// ダジャレかどうか判定しそうならGeneratorを生成する
+    /// </summary>
     public class PunJudge : IJudgeable
     {
         public bool IsMatch { get; set; }
+        private string _longestPun;
 
         public async UniTask<Unit> JudgeAsync(string text)
         {
-
-            IsMatch = false;
+            IMorphemeAnalyzer analyzer = new MorphemeAnalyzer();
+            await analyzer.Analyze(text);
+            if (!analyzer.Succeeded)
+            {
+                IsMatch = false;
+                return Unit.Default;
+            }
+            IsMatch = true;
+            MorphemeHandler morphemeHandler = new MorphemeHandler();
+            string planeText = await morphemeHandler.GetReadingAsync(analyzer.Result);
+            PunSearcher punSearcher = new PunSearcher();
+            _longestPun = await punSearcher.GetLongestPun(planeText);
+            if(_longestPun.Length < 4)
+            {
+                IsMatch = false;
+                return Unit.Default;
+            }
+            IsMatch = true;
             return Unit.Default;
         }
-        public OutputGenerator Generator() => new PunGenerator();
+        public OutputGenerator Generator() => new PunGenerator(_longestPun);
     }
 }

@@ -19,7 +19,7 @@ namespace QQAgent.Sample
             IMorphemeAnalyzer analyzer = new MorphemeAnalyzer();
             await analyzer.Analyze("’|’N‚©‚ª—§‚Ä‚©‚¯‚½B’|—§‚ÄŠ|‚¯‚½‚©‚Á‚½‚©‚ç—§‚ÄŠ|‚¯‚½B");
             MorphemeHandler morphemeHandler = new MorphemeHandler();
-            if (analyzer.Successed)
+            if (analyzer.Succeeded)
             {
                 Debug.Log(await morphemeHandler.GetReadingAsync(analyzer.Result));
             }
