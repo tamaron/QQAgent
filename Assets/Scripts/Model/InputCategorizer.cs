@@ -23,6 +23,13 @@ namespace QQAgent.UI.Model
         // Generatorに渡すべき情報(天気を取得したい場所など)がある場合はGeneratorのコンストラクタの引数で渡す
         public async UniTask<Unit> CategorizeAsync(string text)
         {
+            // AnalyzedInputの作成
+            AnalyzedInput analyzedInput = new AnalyzedInput();
+            analyzedInput.Text = text;
+            IMorphemeAnalyzer analyzer = new MorphemeAnalyzer();
+            await analyzer.Analyze(text);
+            if (analyzer.Succeeded) analyzedInput.Morpheme = analyzer.Result;
+
             // 配列の先頭から順に試す
             List<IJudgeable> judgeList = new List<IJudgeable>();
             judgeList.Add(new WeatherJudge());
@@ -30,7 +37,7 @@ namespace QQAgent.UI.Model
             judgeList.Add(new NoneJudge());
             foreach(var judge in judgeList)
             {
-                await judge.JudgeAsync(text);
+                await judge.JudgeAsync(analyzedInput);
                 if (judge.IsMatch)
                 {
                     this.Generator = judge.Generator();
@@ -48,7 +55,7 @@ namespace QQAgent.UI.Model
     // TODO:GeneratorとJudgeを何かしらで結びつける
     public interface IJudgeable
     {
-        public UniTask<Unit> JudgeAsync(string text = null);
+        public UniTask<Unit> JudgeAsync(AnalyzedInput analyzedInput = null);
         public bool IsMatch { get; }
         public OutputGenerator Generator();
     }
@@ -56,26 +63,28 @@ namespace QQAgent.UI.Model
     public class NoneJudge : IJudgeable
     {
         public bool IsMatch { get; set; }
-
-        public async UniTask<Unit> JudgeAsync(string text)
+        AnalyzedInput _analyzedInput;
+        public async UniTask<Unit> JudgeAsync(AnalyzedInput analyzedInput)
         {
+            _analyzedInput = analyzedInput;
             IsMatch = true;
             return Unit.Default;
         }
-        public OutputGenerator Generator() => new NoneGenerator();
+        public OutputGenerator Generator() => new NoneGenerator(_analyzedInput);
     }
 
     public class WeatherJudge : IJudgeable
     {
         public bool IsMatch { get; set; }
-
+        AnalyzedInput _analyzedInput;
         // TODO 天気に関するワードや地名取得をMecabで行う
-        public async UniTask<Unit> JudgeAsync(string text)
+        public async UniTask<Unit> JudgeAsync(AnalyzedInput analyzedInput)
         {
-            IsMatch = Regex.IsMatch(text, "天気");
+            _analyzedInput = analyzedInput;
+            IsMatch = Regex.IsMatch(analyzedInput.Text, "天気");
             return Unit.Default;
         }
-        public OutputGenerator Generator() => new WeatherGenerator();
+        public OutputGenerator Generator() => new WeatherGenerator(_analyzedInput);
     }
 
 
@@ -87,18 +96,16 @@ namespace QQAgent.UI.Model
         public bool IsMatch { get; set; }
         private string _longestPun;
 
-        public async UniTask<Unit> JudgeAsync(string text)
+        public async UniTask<Unit> JudgeAsync(AnalyzedInput analyzedInput)
         {
-            IMorphemeAnalyzer analyzer = new MorphemeAnalyzer();
-            await analyzer.Analyze(text);
-            if (!analyzer.Succeeded)
+            if (analyzedInput.Morpheme == null)
             {
                 IsMatch = false;
                 return Unit.Default;
             }
             IsMatch = true;
             MorphemeHandler morphemeHandler = new MorphemeHandler();
-            string planeText = await morphemeHandler.GetReadingAsync(analyzer.Result);
+            string planeText = await morphemeHandler.GetReadingAsync(analyzedInput.Morpheme);
             PunSearcher punSearcher = new PunSearcher();
             _longestPun = await punSearcher.GetLongestPun(planeText);
             if(_longestPun.Length < 4)
@@ -106,6 +113,8 @@ namespace QQAgent.UI.Model
                 IsMatch = false;
                 return Unit.Default;
             }
+            Debug.Log(analyzedInput.Text);
+            Debug.Log(planeText);
             IsMatch = true;
             return Unit.Default;
         }

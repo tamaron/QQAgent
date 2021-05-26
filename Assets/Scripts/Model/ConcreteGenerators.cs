@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS1998
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
@@ -7,6 +8,8 @@ using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Net.Http;
+using QQAgent.Morpheme;
 
 namespace QQAgent.UI.Model
 {
@@ -15,7 +18,8 @@ namespace QQAgent.UI.Model
     /// </summary>
     public class NoneGenerator : OutputGenerator
     {
-        public async override UniTask<Unit> GenerateAsync(string text)
+        public NoneGenerator(AnalyzedInput analyzedInput) : base(analyzedInput) { }
+        public async override UniTask<Unit> GenerateAsync()
         {
             Result = MessageTemp.NoneMessage;
             return Unit.Default;
@@ -27,20 +31,30 @@ namespace QQAgent.UI.Model
     /// </summary>
     public class WeatherGenerator : OutputGenerator
     {
+        public WeatherGenerator(AnalyzedInput analyzedInput) : base(analyzedInput) { }
+
         const int CELUSIUS = 273;
-        public async override UniTask<Unit> GenerateAsync(string text)
+        public async override UniTask<Unit> GenerateAsync()
         {
-            string url = "https://community-open-weather-map.p.rapidapi.com" +
-                "/weather?q=%E4%BB%99%E5%8F%B0&lang=en&units=%22metric%22%20or%20%22imperial%22";
+
+            var list = _analyzedInput.Morpheme;
+            Clause clause = list.FirstOrDefault(e => e.pos1 == "固有名詞" && e.pos2 == "地域");
+            string place = clause != null ? clause.surface : null; 
+
             try
             {
-                UnityWebRequest uwr = UnityWebRequest.Get(url);
-                // APIKeyはGitHubにあげないように
-                uwr.SetRequestHeader("x-rapidapi-key", Credential.OPEN_WEATHER_MAP_API_KEY);
-                uwr.SetRequestHeader("x-rapidapi-host", "community-open-weather-map.p.rapidapi.com");
+                var querys = new Dictionary<string, string>();
+                querys.Add("q", place ?? "仙台");
+                string url = "https://community-open-weather-map.p.rapidapi.com/weather?";
+                url += await new FormUrlEncodedContent(querys).ReadAsStringAsync();
+                HttpClient httpClient = new HttpClient();
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Add("x-rapidapi-key", Credential.OPEN_WEATHER_MAP_API_KEY);
+                request.Headers.Add("x-rapidapi-host", "community-open-weather-map.p.rapidapi.com");
+                HttpResponseMessage response = await httpClient.SendAsync(request);
 
-                await uwr.SendWebRequest();
-                Root data = JsonConvert.DeserializeObject<Root>(uwr.downloadHandler.text);
+                Root data = JsonConvert.DeserializeObject<Root>(await response.Content.ReadAsStringAsync());
+                if (!response.IsSuccessStatusCode) throw new Exception($"[Cannot get weather in Given place : {place}]");
                 Result =
                     $"{data.name} の天気" +
                     $"\r\n" +
@@ -48,13 +62,11 @@ namespace QQAgent.UI.Model
                     $"\r\n" +
                     $"気温 : { (int)(data.main.temp - CELUSIUS)}度" +
                     $"\r\n" +
-                    $"湿度 : { (int)data.main.humidity}%" +
-                    $"\r\n" +
-                    $"体感温度 : { (int)(data.main.feelslike - CELUSIUS)}度";
+                    $"湿度 : { (int)data.main.humidity}%";
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Debug.LogError(e.Message);
+                Debug.LogError(exception.Message);
                 Result = MessageTemp.ErrorMessage;
             }
             return Unit.Default;
@@ -127,14 +139,15 @@ namespace QQAgent.UI.Model
     }
 
     /// <summary>
-    /// だじゃれの評価をいう
+    /// だじゃれの評価文を生成する
     /// </summary>
     public class PunGenerator : OutputGenerator
     {
         private string _longestPun;
         public PunGenerator(string pun) => _longestPun = pun;
+        public PunGenerator(AnalyzedInput analyzedInput) : base(analyzedInput) { }
 
-        public override async UniTask<Unit> GenerateAsync(string text)
+        public override async UniTask<Unit> GenerateAsync()
         {
             Result =
                 $"{_longestPun} が掛かっているのか...\r\n" +

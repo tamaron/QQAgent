@@ -19,10 +19,10 @@ namespace QQAgent.Pun
         public async UniTask<string> GetLongestPun(string text)
         {
             int size = text.Length;
-            Debug.Log($"{size} {text}");
             int[,] table = new int[size + 1, size + 1];
             int max = 0;
-            (int i, int j) locate = (-1, -1);
+            (int i, int j) locate = (0, 0);
+            // TODO:ˆêŽŸŒ³”z—ñ‚Å‰ñ‚·
             await UniTask.Run(() => { 
                 for (int j = size - 1; 0 <= j; j--) for (int i = j - 1; 0 <= i; i--)
                 {
@@ -32,10 +32,8 @@ namespace QQAgent.Pun
                         max = table[i, j];
                         locate = (i, j);
                     }
-                    Debug.Log($"{i} {j} {table[i, j]}");
                 }
             });
-            Debug.Log($"{locate.i} {locate.j}");
             return text.Substring(locate.i, max);
         } 
     }

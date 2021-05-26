@@ -59,6 +59,7 @@ namespace QQAgent.Morpheme
                 );
                 string jsonData = await response.Content.ReadAsStringAsync();
                 jsonData = Regex.Unescape(jsonData);
+
                 Result = JsonConvert.DeserializeObject<List<Clause>>(jsonData);
                 Succeeded = true;
             }
