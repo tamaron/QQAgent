@@ -20,7 +20,7 @@
 [Aa]ssets/Plugins/Editor/JetBrains*
 
 # Credentials
-[Aa]ssets/Scripts/Credentials/
+[Aa]ssets/Scripts/Credentials*
 # Visual Studio cache directory
 .vs/
 
