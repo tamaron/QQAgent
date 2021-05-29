@@ -19,8 +19,6 @@ namespace QQAgent.UI.Model
     {  
 
         // 天気=>だじゃれ=>noneの順で判定
-        // TODO:判定の優先度とか順番をもっとシステマチックにする
-        // Generatorに渡すべき情報(天気を取得したい場所など)がある場合はGeneratorのコンストラクタの引数で渡す
         public async UniTask<Unit> CategorizeAsync(string text)
         {
             // AnalyzedInputの作成
@@ -46,18 +44,17 @@ namespace QQAgent.UI.Model
             }
             throw new Exception("All Generators do not match.");
         }
-        public OutputGenerator Generator { get; private set; }
+        public Generator Generator { get; private set; }
     }
 
     /// <summary>
-    /// 入力文がGeneratorに適応可能であるか判定し，可能ならGeneratorを取り出せるようにする
+    /// 入力文がGeneratorに適応可能であるか判定し、Generatorを取り出す
     /// </summary>
-    // TODO:GeneratorとJudgeを何かしらで結びつける
     public interface IJudgeable
     {
         public UniTask<Unit> JudgeAsync(AnalyzedInput analyzedInput = null);
         public bool IsMatch { get; }
-        public OutputGenerator Generator();
+        public Generator Generator();
     }
 
     public class NoneJudge : IJudgeable
@@ -70,27 +67,22 @@ namespace QQAgent.UI.Model
             IsMatch = true;
             return Unit.Default;
         }
-        public OutputGenerator Generator() => new NoneGenerator(_analyzedInput);
+        public Generator Generator() => new NoneGenerator(_analyzedInput);
     }
 
     public class WeatherJudge : IJudgeable
     {
         public bool IsMatch { get; set; }
         AnalyzedInput _analyzedInput;
-        // TODO 天気に関するワードや地名取得をMecabで行う
         public async UniTask<Unit> JudgeAsync(AnalyzedInput analyzedInput)
         {
             _analyzedInput = analyzedInput;
             IsMatch = Regex.IsMatch(analyzedInput.Text, "天気");
             return Unit.Default;
         }
-        public OutputGenerator Generator() => new WeatherGenerator(_analyzedInput);
+        public Generator Generator() => new WeatherGenerator(_analyzedInput);
     }
 
-
-    /// <summary>
-    /// ダジャレかどうか判定しそうならGeneratorを生成する
-    /// </summary>
     public class PunJudge : IJudgeable
     {
         public bool IsMatch { get; set; }
@@ -113,11 +105,11 @@ namespace QQAgent.UI.Model
                 IsMatch = false;
                 return Unit.Default;
             }
-            Debug.Log(analyzedInput.Text);
-            Debug.Log(planeText);
+            //Debug.Log(analyzedInput.Text);
+            //Debug.Log(planeText);
             IsMatch = true;
             return Unit.Default;
         }
-        public OutputGenerator Generator() => new PunGenerator(_longestPun);
+        public Generator Generator() => new PunGenerator(_longestPun);
     }
 }

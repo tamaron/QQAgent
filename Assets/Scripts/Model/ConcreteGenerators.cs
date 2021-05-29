@@ -16,7 +16,7 @@ namespace QQAgent.UI.Model
     /// <summary>
     /// NoneMessageを生成する
     /// </summary>
-    public class NoneGenerator : OutputGenerator
+    public class NoneGenerator : Generator
     {
         public NoneGenerator(AnalyzedInput analyzedInput) : base(analyzedInput) { }
         public async override UniTask<Unit> GenerateAsync()
@@ -27,20 +27,16 @@ namespace QQAgent.UI.Model
     }
 
     /// <summary>
-    /// 天気予報を生成する
+    /// 天気予報の応答を生成する
     /// </summary>
-    public class WeatherGenerator : OutputGenerator
+    public class WeatherGenerator : Generator
     {
         public WeatherGenerator(AnalyzedInput analyzedInput) : base(analyzedInput) { }
 
         const int CELUSIUS = 273;
         public async override UniTask<Unit> GenerateAsync()
         {
-
-            var list = _analyzedInput.Morpheme;
-            Clause clause = list.FirstOrDefault(e => e.pos1 == "固有名詞" && e.pos2 == "地域");
-            string place = clause != null ? clause.surface : null; 
-
+            string place = _analyzedInput.Morpheme.FirstOrDefault(e => e.pos1 == "固有名詞" && e.pos2 == "地域")?.surface;
             try
             {
                 var querys = new Dictionary<string, string>();
@@ -52,9 +48,8 @@ namespace QQAgent.UI.Model
                 request.Headers.Add("x-rapidapi-key", Credential.OPEN_WEATHER_MAP_API_KEY);
                 request.Headers.Add("x-rapidapi-host", "community-open-weather-map.p.rapidapi.com");
                 HttpResponseMessage response = await httpClient.SendAsync(request);
-
-                Root data = JsonConvert.DeserializeObject<Root>(await response.Content.ReadAsStringAsync());
-                if (!response.IsSuccessStatusCode) throw new Exception($"[Cannot get weather in Given place : {place}]");
+                OpenWeatherMapData data = JsonConvert.DeserializeObject<OpenWeatherMapData>(await response.Content.ReadAsStringAsync());
+                if (!response.IsSuccessStatusCode) throw new Exception($"[Cannot get weather in given place : {place}]");
                 Result =
                     $"{data.name} の天気" +
                     $"\r\n" +
@@ -75,7 +70,7 @@ namespace QQAgent.UI.Model
         /// <summary>
         /// OpenWeatherMapからデータ受け取りに使う内部クラス
         /// </summary>
-        private class Root
+        private class OpenWeatherMapData
         {
             public class Coord
             {
@@ -141,7 +136,7 @@ namespace QQAgent.UI.Model
     /// <summary>
     /// だじゃれの評価文を生成する
     /// </summary>
-    public class PunGenerator : OutputGenerator
+    public class PunGenerator : Generator
     {
         private string _longestPun;
         public PunGenerator(string pun) => _longestPun = pun;

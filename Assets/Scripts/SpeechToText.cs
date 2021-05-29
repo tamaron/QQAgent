@@ -75,11 +75,11 @@ namespace QQAgent.Utils
             {
                 await uwr.SendWebRequest();
                 var response = JsonMapper.ToObject(uwr.downloadHandler.text);
-                Debug.Log(
-                    $"transcript : {response["results"][0]["alternatives"][0]["transcript"]}" +
-                    $"\r\n" +
-                    $"confidence : { response["results"][0]["alternatives"][0]["confidence"]}"
-                    );
+                //Debug.Log(
+                //    $"transcript : {response["results"][0]["alternatives"][0]["transcript"]}" +
+                //    $"\r\n" +
+                //    $"confidence : { response["results"][0]["alternatives"][0]["confidence"]}"
+                //    );
 
                 TranslatedContent = (string)response["results"][0]["alternatives"][0]["transcript"];
             }

@@ -13,11 +13,12 @@ namespace QQAgent.UI.Model
     ///  応答生成する基底クラス
     ///  GenerateAsync()を呼び出すとResultに応答文が格納される
     /// </summary>
-    abstract public class OutputGenerator
+    abstract public class Generator
     {
+        // 応答生成に必要なデータ
         protected AnalyzedInput _analyzedInput;
-        public OutputGenerator() { }
-        public OutputGenerator(AnalyzedInput analyzedInput)
+        public Generator() { }
+        public Generator(AnalyzedInput analyzedInput)
         {
             _analyzedInput = analyzedInput;
         }
@@ -26,7 +27,7 @@ namespace QQAgent.UI.Model
     }
 
     /// <summary>
-    /// JudgeやGeneratorが応答生成に必要なデータをまとめてある
+    /// 応答生成に必要なデータをまとめたクラス
     /// </summary>
     public class AnalyzedInput
     {

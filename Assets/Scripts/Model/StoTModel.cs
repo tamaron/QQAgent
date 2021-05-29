@@ -9,6 +9,9 @@ using UniRx;
 
 namespace QQAgent.UI.Model
 {
+    /// <summary>
+    /// 音声入力を行い､，テキスト化する
+    /// </summary>
     public class StoTModel
     {
         const int RECORD_SEC = 3;

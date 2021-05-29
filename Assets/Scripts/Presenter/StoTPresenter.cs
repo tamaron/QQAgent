@@ -10,7 +10,6 @@ using System.Threading;
 
 namespace QQAgent.UI.Presenter
 {
-
     public class StoTPresenter : MonoBehaviour
     {
         StoTSender StoTSender;

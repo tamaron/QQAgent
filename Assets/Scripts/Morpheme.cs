@@ -38,6 +38,7 @@ namespace QQAgent.Morpheme
     
     public class MorphemeAnalyzer : IMorphemeAnalyzer
     {
+        // TODO: List<Clause>Œ^‚ğMorphemeŒ^‚É‚·‚éiì‚éj
         public List<Clause> Result { get; set; } 
         public bool Succeeded{ get; set; }
 
