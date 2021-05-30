@@ -10,26 +10,26 @@ using System.Threading;
 
 namespace QQAgent.UI.Presenter
 {
-    public class StoTPresenter : MonoBehaviour
+    public class SpeechToTextPresenter : MonoBehaviour
     {
-        StoTSender StoTSender;
-        StoTModel StoTModel;
+        SpeechToTextSender StoTSender;
+        SpeechToTextModel StoTModel;
 
         private void Start()
         {
-            StoTSender = StoTSender.Instance;
-            StoTModel = new StoTModel();
+            StoTSender = SpeechToTextSender.Instance;
+            StoTModel = new SpeechToTextModel();
             var tokenSource = new CancellationTokenSource();
             StoTSender.OnListenStart().Subscribe(async _ =>
             {
-                SenderControl.Instance.Listening.Value = true;
+                SenderControlData.Instance.Listening.Value = true;
                 var token = tokenSource.Token;
                 string result = await StoTModel.GetSpeechToText(token);
                 if (!(result == null))
                 {
                     StoTSender.SenderOutputSubject.OnNext(result);
                 }
-                SenderControl.Instance.Listening.Value = false;
+                SenderControlData.Instance.Listening.Value = false;
             }).AddTo(this);
         }
     }

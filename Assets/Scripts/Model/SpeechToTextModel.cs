@@ -12,7 +12,7 @@ namespace QQAgent.UI.Model
     /// <summary>
     /// 音声入力を行い､，テキスト化する
     /// </summary>
-    public class StoTModel
+    public class SpeechToTextModel
     {
         const int RECORD_SEC = 3;
         public async UniTask<string> GetSpeechToText(CancellationToken token)

@@ -19,10 +19,12 @@ namespace QQAgent.Morpheme
     {
         public UniTask<Unit> Analyze(string text);
         public bool Succeeded { get; }
-        public List<Clause> Result { get; }
+        public Morpheme Result { get; }
     }
 
-
+    /// <summary>
+    /// 文節を表す
+    /// </summary>
     public class Clause
     {
         public string surface { get; set; }
@@ -35,11 +37,17 @@ namespace QQAgent.Morpheme
         public string conjugatedform { get; set; }
         public string inflection { get; set; }
     }
-    
+    /// <summary>
+    /// 文(文節のあつまり)を表す
+    /// </summary>
+    public class Morpheme {
+        public List<Clause> Content { get; set; } = new List<Clause>();
+    }
+
+
     public class MorphemeAnalyzer : IMorphemeAnalyzer
     {
-        // TODO: List<Clause>型をMorpheme型にする（作る）
-        public List<Clause> Result { get; set; } 
+        public Morpheme Result { get; set; } = new Morpheme(); 
         public bool Succeeded{ get; set; }
 
         public async UniTask<Unit> Analyze(string text)
@@ -60,8 +68,7 @@ namespace QQAgent.Morpheme
                 );
                 string jsonData = await response.Content.ReadAsStringAsync();
                 jsonData = Regex.Unescape(jsonData);
-
-                Result = JsonConvert.DeserializeObject<List<Clause>>(jsonData);
+                Result.Content = JsonConvert.DeserializeObject<List<Clause>>(jsonData);
                 Succeeded = true;
             }
             catch(Exception exception)
@@ -75,9 +82,10 @@ namespace QQAgent.Morpheme
 
     public class MorphemeHandler
     {
-        public async UniTask<string> GetReadingAsync(List<Clause> morpheme) =>
+        public async UniTask<string> GetReadingAsync(Morpheme morpheme) =>
             await UniTask.Run(() => 
                 morpheme
+                .Content
                 .ConvertAll(e => e.reading)
                 .Aggregate(new StringBuilder(), (result, next) => result.Append(next))
                 .ToString()

@@ -1,0 +1,198 @@
+@startuml
+scale 0.6
+title QQAgent 入力・応答生成まわりのクラス図
+abstract class OutputGenerator
+{
+    # AnalyzedInput: _analyzedInput
+    + <<property>> Result : string {protrcted set;}
+}
+
+class AnalyzedInput
+{
+    + <<property>> Morpheme: Morpheme
+    + <<property>> Text: string
+}
+
+class InputCategorizer
+{  
+
+    + <<async>> UniTask<Unit> CategorizeAsync()
+    +<<property>> OutputGenerator: OutputGenerator { get; private set; }
+}
+interface IJudgeable
+{
+    + UniTask<Unit> JudgeAsync()
+    + <<property>> bool IsMatch { get; }
+    + OutputGenerator OutputGenerator()
+}
+
+class NoneJudge
+{
+    -AnalyzedInput _analyzedInput
+}
+
+class WeatherJudge
+{
+    -AnalyzedInput _analyzedInput
+}
+
+class PunJudge
+{
+    -AnalyzedInput _analyzedInput
+    -PunSeatcher: punSearcher
+}
+
+class PunSearcher
+{
+    +<<async>> Unitask<string> GetLongestPun()
+}
+
+class SpeechToTextPresenter<<MonoBehabiour>>
+{
+
+}
+class SpeechToTextModel
+{
+    + <<async>> UniTask<string> GetSpeechToText()
+}
+
+class InputIntegrator
+{
+    + IObservable<string> OnInputSubmitted()
+    -IInputDisplay: _display;
+    -List<IInputSender>: _senders
+}
+
+interface IInputDisplay{
+
+}
+
+interface IInputSender{
+
+}
+
+interface IRecorder{
+
+}
+
+interface ITranslater{
+
+}
+
+interface IInputSubmitter{
+
+}
+
+interface IMorphemeAnalyzer{
+
+}
+
+class MorphemeAnalyzer{
+
+}
+
+class InputFieldSender <<SingletonMonoBehaviour<InputFieldSender>>>
+{
+    +<<property>> DisplayText: string
+
+}
+
+class SenderControlData<<Singleton>>
+{
+    + Listening: ReactiveProperty<bool>
+}
+
+class TextGroupPresenter<<MonoBehabiour>>
+{
+
+}
+
+class Morpheme{
+
+}
+
+class Clause{
+    
+}
+
+class MorphemeHandler
+{
+
+}
+class TextGroupOutput<<MonoBehabiour>>
+{
+
+}
+
+class SpeechToTextSender<<SingletonMonoBehaviour<SpeechToTextSender>>>
+
+AnalyzedInput --o Morpheme:元の入力文と一緒に保持
+IMorphemeAnalyzer ..> Morpheme:Morphemeを生成
+MorphemeHandler ..> Morpheme:カタカナ文生成の材料
+PunJudge ..> MorphemeHandler:カタカナ文取得
+Morpheme "1"--* "many" Clause
+InputCategorizer ..> IMorphemeAnalyzer:AnalyzedInput作成のため\nMorphemeを作らせる
+IMorphemeAnalyzer <|.. MorphemeAnalyzer
+TextGroupPresenter ..> TextGroupModel:応答文を取得
+TextGroupPresenter ..> IInputSubmitter:最終的な入力文(Submit)を購読
+TextGroupPresenter ..> TextGroupOutput:応答文が取得出来たらUIに表示
+TextGroupModel ..> InputCategorizer
+' TextGroupModel ..> OutputGenerator
+InputCategorizer "1" --* "3" IJudgeable:Matchするまで登録された\nIJudgeanleを順番に試す
+IJudgeable --> OutputGenerator:MatchするならMatchしたタイプのGeneratorを生成
+InputCategorizer --> AnalyzedInput:各Judge・Generatorが\n参照できるデータとして生成
+InputIntegrator "1" --* "2" IInputSender:各Senderでの入力文生成(Send)をすべて購読 
+InputIntegrator  -->  IInputDisplay:Sendを観測したらUIの入力文を更新
+IInputSender <|.. SpeechToTextSender:StTによる入力
+IInputSender <|.. InputFieldSender:InputFieldによる入力
+IInputDisplay <|.. InputFieldSender:InputFieldのテキストを更新
+IJudgeable <|.. NoneJudge 
+IJudgeable <|.. WeatherJudge 
+IJudgeable <|.. PunJudge 
+IInputSubmitter <|.. InputIntegrator 
+PunJudge ..> PunSearcher:最長ダジャレの探索
+SpeechToTextSender ..> SenderControlData:自他のSenderの状態を変更・取得する
+InputFieldSender ..> SenderControlData:自他のSenderの状態を変更・取得する
+InputFieldSender -l- SpeechToTextSender:Send可能かどうかはGameStateや\nSenderControlDataの状態で各々判断する\n(Sender間に弱い関連性がある)
+SpeechToTextPresenter ..> SpeechToTextModel:録音し，変換されたテキストを取得
+SpeechToTextPresenter ..> SpeechToTextSender:Listen開始を購読\n変換されたテキストを返す
+SpeechToTextModel ..> IRecorder:録音
+SpeechToTextModel ..> ITranslater:音声をテキスト化
+IRecorder <|.. Recorder 
+ITranslater <|.. SpeechToText 
+OutputGenerator <|-- NoneGenerator
+OutputGenerator <|-- WeatherGenerator
+OutputGenerator <|-- PunGenerator
+OutputGenerator ..> AnalyzedInput:応答文生成に利用
+NoneJudge ..> AnalyzedInput:判定材料
+WeatherJudge ..> AnalyzedInput:判定材料
+PunJudge ..> AnalyzedInput:判定材料
+
+note right of InputFieldSender
+    キーボード入力を行うと
+    自動的にUIに表示されてる
+    内容も変わってしまう
+    (表示と入力文生成の機能を
+    切り分けることができない)
+    InputFieldの性質上，
+    やむなくSenderとDisplayの
+    両方の機能を実装する
+end note
+
+note right of SenderControlData
+    具体的には録音中かどうかの情報を持つ
+    録音中ならInputFieldSenderはSendすることができない
+end note
+
+note bottom of AnalyzedInput
+    元の入力文(string)と入力を形態素解析したデータ(Morpheme)を持つ
+end note
+
+note bottom of SpeechToTextSender
+    SerializeFieldを使いたいのと
+    InputIntegratorから参照しやすいという理由で
+    Singletonにしているが，好ましくない
+    参照をDIコンテナなどで解決して
+    MonoBehabiourを継承しないようにしたい
+end note
+@enduml

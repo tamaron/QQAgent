@@ -6,8 +6,8 @@ using UniRx;
 /// <summary>
 /// SenderŠÔ‚Ì§Œä—p•Ï”‚ğ•Û‚·‚é
 /// </summary>
-public class SenderControl
+public class SenderControlData
 {
-    public static SenderControl Instance { get; } = new SenderControl();
+    public static SenderControlData Instance { get; } = new SenderControlData();
     public ReactiveProperty<bool> Listening = new ReactiveProperty<bool>(false);
 }

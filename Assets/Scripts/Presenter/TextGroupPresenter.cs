@@ -35,13 +35,14 @@ namespace QQAgent.UI.Presenter
                     sw.Start();
                     _viewOutput.ResultText = await _model.GetOutputAsync(text);
                     sw.Stop();
-                    await ProcessingTimeAdjust(sw.ElapsedMilliseconds);
+                    await AdjustProcessingTime(sw.ElapsedMilliseconds);
                     GameStateModel.Instance.State.Value = GameState.Output;
                 }).AddTo(this);
 
         }
 
-        private async UniTask<Unit> ProcessingTimeAdjust(long ms)
+
+        private async UniTask<Unit> AdjustProcessingTime(long ms)
         {
             long waitTime = processingTimeAdjustMilliseconds - ms;
             if (waitTime <= 0) return Unit.Default;

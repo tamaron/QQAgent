@@ -12,7 +12,7 @@ namespace QQAgent.UI.View
     /// <summary>
     /// SpeechToText‚Å¶¬‚µ‚½“ü—Í•¶‚ğSend‚·‚é
     /// </summary>
-    public class StoTSender : SingletonMonoBehaviour<StoTSender>, IInputSender
+    public class SpeechToTextSender : SingletonMonoBehaviour<SpeechToTextSender>, IInputSender
     {
         [SerializeField] Button button;
         public bool Interactable {
@@ -42,13 +42,13 @@ namespace QQAgent.UI.View
                         .Subscribe(state =>
                         {
                             if (state == GameState.WaitingInput
-                                    && !SenderControl.Instance.Listening.Value
+                                    && !SenderControlData.Instance.Listening.Value
                                 ) observer.OnNext(true);
                             else observer.OnNext(false);
                         })
                 );
                 disposable.Add(
-                    SenderControl.Instance.Listening
+                    SenderControlData.Instance.Listening
                         .Subscribe(b =>
                         {
                             if (GameStateModel.Instance.State.Value == GameState.WaitingInput && !b

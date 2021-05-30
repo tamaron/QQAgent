@@ -44,7 +44,7 @@ namespace QQAgent.UI.Model
             }
             throw new Exception("All Generators do not match.");
         }
-        public Generator Generator { get; private set; }
+        public OutputGenerator Generator { get; private set; }
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ namespace QQAgent.UI.Model
     {
         public UniTask<Unit> JudgeAsync(AnalyzedInput analyzedInput = null);
         public bool IsMatch { get; }
-        public Generator Generator();
+        public OutputGenerator Generator();
     }
 
     public class NoneJudge : IJudgeable
@@ -67,7 +67,7 @@ namespace QQAgent.UI.Model
             IsMatch = true;
             return Unit.Default;
         }
-        public Generator Generator() => new NoneGenerator(_analyzedInput);
+        public OutputGenerator Generator() => new NoneGenerator(_analyzedInput);
     }
 
     public class WeatherJudge : IJudgeable
@@ -80,7 +80,7 @@ namespace QQAgent.UI.Model
             IsMatch = Regex.IsMatch(analyzedInput.Text, "天気");
             return Unit.Default;
         }
-        public Generator Generator() => new WeatherGenerator(_analyzedInput);
+        public OutputGenerator Generator() => new WeatherGenerator(_analyzedInput);
     }
 
     public class PunJudge : IJudgeable
@@ -110,6 +110,6 @@ namespace QQAgent.UI.Model
             IsMatch = true;
             return Unit.Default;
         }
-        public Generator Generator() => new PunGenerator(_longestPun);
+        public OutputGenerator Generator() => new PunGenerator(_longestPun);
     }
 }

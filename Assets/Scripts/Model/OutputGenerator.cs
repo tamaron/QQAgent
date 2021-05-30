@@ -13,12 +13,12 @@ namespace QQAgent.UI.Model
     ///  応答生成する基底クラス
     ///  GenerateAsync()を呼び出すとResultに応答文が格納される
     /// </summary>
-    abstract public class Generator
+    abstract public class OutputGenerator
     {
         // 応答生成に必要なデータ
         protected AnalyzedInput _analyzedInput;
-        public Generator() { }
-        public Generator(AnalyzedInput analyzedInput)
+        public OutputGenerator() { }
+        public OutputGenerator(AnalyzedInput analyzedInput)
         {
             _analyzedInput = analyzedInput;
         }
@@ -31,12 +31,7 @@ namespace QQAgent.UI.Model
     /// </summary>
     public class AnalyzedInput
     {
-        List<Clause> _morpheme = null;
-        public List<Clause> Morpheme
-        {
-            get => _morpheme;
-            set => _morpheme = value;
-        }
+        public Morpheme.Morpheme Morpheme{ get; set; }
         public string Text { get; set; }
     }
 

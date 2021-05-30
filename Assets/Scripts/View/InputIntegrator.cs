@@ -49,7 +49,7 @@ namespace QQAgent.UI.View
             _display = InputFieldSender.Instance;
 
             _senders.Add(InputFieldSender.Instance);
-            _senders.Add(StoTSender.Instance);
+            _senders.Add(SpeechToTextSender.Instance);
             // ŠeX‚ÌSender‚ğw“Ç‚·‚é
             foreach (var sender in _senders)
             {

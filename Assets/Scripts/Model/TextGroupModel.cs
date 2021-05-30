@@ -22,10 +22,9 @@ namespace QQAgent.UI.Model
         {
             InputCategorizer categorizer = new InputCategorizer();
             await categorizer.CategorizeAsync(text);
-            Generator generator = categorizer.Generator;
             // 応答文生成
-            await generator.GenerateAsync();
-            return generator.Result;
+            await categorizer.Generator.GenerateAsync();
+            return categorizer.Generator.Result;
         }
     }
 }
