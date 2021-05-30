@@ -45,9 +45,8 @@ namespace QQAgent.UI.View
         List<IInputSender> _senders = new List<IInputSender>();
         public InputIntegrator()
         {
-            // 入力した文字を表示する
+            //入力した文字を表示する
             _display = InputFieldSender.Instance;
-
             _senders.Add(InputFieldSender.Instance);
             _senders.Add(SpeechToTextSender.Instance);
             // 各々のSenderを購読する
