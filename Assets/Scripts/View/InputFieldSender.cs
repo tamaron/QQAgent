@@ -3,21 +3,30 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 using UniRx;
 using QQAgent.State;
 
 namespace QQAgent.UI.View
 {
-    public class TextGroupInput : MonoBehaviour
+    /// <summary>
+    /// InputFieldの入力をSendする(Submitされた時にその入力内容を反映する)
+    /// </summary>
+    public class InputFieldSender : SingletonMonoBehaviour<InputFieldSender>, IInputSender, IInputDisplay
     {
         [SerializeField] private TMP_InputField inputField;
 
-        public IObservable<string> OnInputFieldTextChanged() => inputField.onEndEdit.AsObservable().Where(text => !string.IsNullOrEmpty(text));
-        public string InputFieldText
+        public IObservable<string> OnInputSent() => 
+            inputField.onEndEdit
+            .AsObservable()
+            .Where(text => !EventSystem.current.alreadySelecting)
+            .Where(text => !SenderControlData.Instance.Listening.Value)
+            .Where(text => !string.IsNullOrEmpty(text));
+        public string DisplayText
         {
-            get { return inputField.text; }
-            set { inputField.text = value; }
+            get => inputField.text;
+            set => inputField.text = value;
         }
 
         private void Start()
@@ -34,7 +43,6 @@ namespace QQAgent.UI.View
                     {
                         inputField.interactable = false;
                     }
-
                 }).AddTo(this);
 
             // text reset
@@ -42,7 +50,7 @@ namespace QQAgent.UI.View
                 .Where(s => s == GameState.WaitingInput)
                 .Subscribe(s =>
                 {
-                    InputFieldText = "";
+                    DisplayText = "";
                 }).AddTo(this);
         }
     }

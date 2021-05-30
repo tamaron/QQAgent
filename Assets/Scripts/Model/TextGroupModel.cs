@@ -13,17 +13,18 @@ using Cysharp.Threading.Tasks;
 
 namespace QQAgent.UI.Model
 {
+    /// <summary>
+    /// 入力文を受け取り応答生成する
+    /// </summary>
     public class TextGroupModel
     {
-        public async UniTask<string> GetResultAsync(string text)
+        public async UniTask<string> GetOutputAsync(string text)
         {
-            // TODO:カテゴライズに時間がかかるかもしれないのでできれば非同期にしたい
-            // コンストラクト時，categorizer.Generatorに適切なResultTextGeneratorの派生クラスが代入される
-            MessageTypeCategorizer categorizer = new MessageTypeCategorizer(text);
-            ResultTextGenerator generator = categorizer.Generator;
+            InputCategorizer categorizer = new InputCategorizer();
+            await categorizer.CategorizeAsync(text);
             // 応答文生成
-            await generator.GenerateAsync();
-            return generator.Result;
+            await categorizer.Generator.GenerateAsync();
+            return categorizer.Generator.Result;
         }
     }
 }

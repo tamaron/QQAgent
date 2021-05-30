@@ -17,31 +17,32 @@ namespace QQAgent.UI.Presenter
     public class TextGroupPresenter : MonoBehaviour
     {
         TextGroupModel _model;
-        TextGroupInput _viewInput;
+        IInputSubmitter _viewInput;
         TextGroupOutput _viewOutput;
         [SerializeField] long processingTimeAdjustMilliseconds;
 
         private void Awake()
         {
             _model = new TextGroupModel();
-            _viewInput = GetComponent<TextGroupInput>();
+            _viewInput = new InputIntegrator();
             _viewOutput = GetComponent<TextGroupOutput>();
 
-            _viewInput.OnInputFieldTextChanged()
+            _viewInput.OnInputSubmitted()
                 .Subscribe(async text =>
                 {
                     GameStateModel.Instance.State.Value = GameState.WaitingOutput;
                     var sw = new Stopwatch();
                     sw.Start();
-                    _viewOutput.ResultText = await _model.GetResultAsync(text);
+                    _viewOutput.ResultText = await _model.GetOutputAsync(text);
                     sw.Stop();
-                    await ProcessingTimeAdjust(sw.ElapsedMilliseconds);
+                    await AdjustProcessingTime(sw.ElapsedMilliseconds);
                     GameStateModel.Instance.State.Value = GameState.Output;
                 }).AddTo(this);
 
         }
 
-        private async UniTask<Unit> ProcessingTimeAdjust(long ms)
+
+        private async UniTask<Unit> AdjustProcessingTime(long ms)
         {
             long waitTime = processingTimeAdjustMilliseconds - ms;
             if (waitTime <= 0) return Unit.Default;
