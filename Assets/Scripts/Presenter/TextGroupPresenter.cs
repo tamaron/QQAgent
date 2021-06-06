@@ -11,6 +11,7 @@ using QQAgent.UI.View;
 using UniRx.Triggers;
 using System.Threading.Tasks;
 using TMPro;
+using System.Threading;
 
 namespace QQAgent.UI.Presenter
 {
@@ -19,10 +20,13 @@ namespace QQAgent.UI.Presenter
         TextGroupModel _model;
         IInputSubmitter _viewInput;
         TextGroupOutput _viewOutput;
+        SpeechToTextSender _SpeechToTextView;
+        SpeechToTextModel _SpeechToTextModel;
         [SerializeField] long processingTimeAdjustMilliseconds;
 
         private void Awake()
         {
+            // メインのMVP
             _model = new TextGroupModel();
             _viewInput = new InputIntegrator();
             _viewOutput = GetComponent<TextGroupOutput>();
@@ -39,6 +43,21 @@ namespace QQAgent.UI.Presenter
                     GameStateModel.Instance.State.Value = GameState.Output;
                 }).AddTo(this);
 
+            // StoT部分のMVP
+            _SpeechToTextView = SpeechToTextSender.Instance;
+            _SpeechToTextModel = new SpeechToTextModel();
+            var tokenSource = new CancellationTokenSource();
+            _SpeechToTextView.OnListenStart().Subscribe(async _ =>
+            {
+                _SpeechToTextView.ListeningSubject.OnNext(true);
+                var token = tokenSource.Token;
+                string result = await _SpeechToTextModel.GetSpeechToText(token);
+                if (!(result == null))
+                {
+                    _SpeechToTextView.SenderOutputSubject.OnNext(result);
+                }
+                _SpeechToTextView.ListeningSubject.OnNext(false);
+            }).AddTo(this);
         }
 
 
