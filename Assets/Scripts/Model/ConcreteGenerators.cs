@@ -19,10 +19,9 @@ namespace QQAgent.UI.Model
     public class NoneGenerator : OutputGenerator
     {
         public NoneGenerator(AnalyzedInput analyzedInput) : base(analyzedInput) { }
-        public async override UniTask<Unit> GenerateAsync()
+        public async override UniTask<string> GenerateAsync()
         {
-            Result = MessageTemp.NoneMessage;
-            return Unit.Default;
+            return MessageTemp.NoneMessage; ;
         }
     }
 
@@ -34,7 +33,7 @@ namespace QQAgent.UI.Model
         public WeatherGenerator(AnalyzedInput analyzedInput) : base(analyzedInput) { }
 
         const int CELUSIUS = 273;
-        public async override UniTask<Unit> GenerateAsync()
+        public async override UniTask<string> GenerateAsync()
         {
             string place = _analyzedInput.Morpheme.Content.FirstOrDefault(e => e.pos1 == "固有名詞" && e.pos2 == "地域")?.surface;
             try
@@ -50,7 +49,7 @@ namespace QQAgent.UI.Model
                 HttpResponseMessage response = await httpClient.SendAsync(request);
                 OpenWeatherMapData data = JsonConvert.DeserializeObject<OpenWeatherMapData>(await response.Content.ReadAsStringAsync());
                 if (!response.IsSuccessStatusCode) throw new Exception($"[Cannot get weather in given place : {place}]");
-                Result =
+                return
                     $"{data.name} の天気" +
                     $"\r\n" +
                     $"天気 : {data.weather[0].main}" +
@@ -62,9 +61,8 @@ namespace QQAgent.UI.Model
             catch (Exception exception)
             {
                 Debug.LogError(exception.Message);
-                Result = MessageTemp.ErrorMessage;
+                return MessageTemp.ErrorMessage;
             }
-            return Unit.Default;
         }
 
         /// <summary>
@@ -142,12 +140,11 @@ namespace QQAgent.UI.Model
         public PunGenerator(string pun) => _longestPun = pun;
         public PunGenerator(AnalyzedInput analyzedInput) : base(analyzedInput) { }
 
-        public override async UniTask<Unit> GenerateAsync()
+        public override async UniTask<string> GenerateAsync()
         {
-            Result =
+            return
                 $"{_longestPun} が掛かっているのか...\r\n" +
                 $"実に面白い...";
-            return Unit.Default;
         }
     }
 }

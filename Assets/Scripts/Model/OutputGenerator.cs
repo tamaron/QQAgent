@@ -22,8 +22,7 @@ namespace QQAgent.UI.Model
         {
             _analyzedInput = analyzedInput;
         }
-        public string Result { get; protected set; }
-        abstract public UniTask<Unit> GenerateAsync();
+        abstract public UniTask<string> GenerateAsync();
     }
 
     /// <summary>

@@ -18,13 +18,10 @@ namespace QQAgent.UI.Model
     /// </summary>
     public class TextGroupModel
     {
+        InputCategorizer _categorizer = new InputCategorizer();
         public async UniTask<string> GetOutputAsync(string text)
         {
-            InputCategorizer categorizer = new InputCategorizer();
-            await categorizer.CategorizeAsync(text);
-            // 応答文生成
-            await categorizer.Generator.GenerateAsync();
-            return categorizer.Generator.Result;
+            return await (await _categorizer.GetSuitableGeneratorAsync(text)).GenerateAsync();
         }
     }
 }

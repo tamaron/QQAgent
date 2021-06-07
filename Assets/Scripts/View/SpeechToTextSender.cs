@@ -62,14 +62,6 @@ namespace QQAgent.UI.View
             });
 
             observable.Subscribe(b => Interactable = b).AddTo(this);
-
-            //Observable.EveryUpdate().Subscribe(_ => {
-            //    if (GameStateModel.Instance.State.Value == GameState.WaitingInput
-            //        && !Listening.Value
-            //    ) Interactable = true;
-            //    else Interactable = false;
-            //}).AddTo(this);
         }
-
     }
 }

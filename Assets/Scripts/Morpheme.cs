@@ -17,9 +17,7 @@ namespace QQAgent.Morpheme
 
     public interface IMorphemeAnalyzer
     {
-        public UniTask<Unit> Analyze(string text);
-        public bool Succeeded { get; }
-        public Morpheme Result { get; }
+        public UniTask<Morpheme> Analyze(string text);
     }
 
     /// <summary>
@@ -47,13 +45,11 @@ namespace QQAgent.Morpheme
 
     public class MorphemeAnalyzer : IMorphemeAnalyzer
     {
-        public Morpheme Result { get; set; } = new Morpheme(); 
-        public bool Succeeded{ get; set; }
-
-        public async UniTask<Unit> Analyze(string text)
+        HttpClient httpClient = new HttpClient();
+        public async UniTask<Morpheme> Analyze(string text)
         {
-            HttpClient httpClient = new HttpClient();
-            var parameters = new Dictionary<string, string>()
+            var result = new Morpheme(); 
+            Dictionary<string, string> parameters = new Dictionary<string, string>()
             {
                 { "sentence", text },
             };
@@ -68,15 +64,14 @@ namespace QQAgent.Morpheme
                 );
                 string jsonData = await response.Content.ReadAsStringAsync();
                 jsonData = Regex.Unescape(jsonData);
-                Result.Content = JsonConvert.DeserializeObject<List<Clause>>(jsonData);
-                Succeeded = true;
+                result.Content = JsonConvert.DeserializeObject<List<Clause>>(jsonData);
             }
             catch(Exception exception)
             {
                 Debug.LogError(exception.Message);
-                Succeeded = false;
+                result = null;
             }
-            return Unit.Default;
+            return result;
         }
     }
 
