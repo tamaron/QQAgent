@@ -1,4 +1,6 @@
-# What is QQAgent?
+# QQAgent
+sample agent application
 
-人工オブジェクト"QQ"と対話する簡易エージェントアプリケーションです。
-WebAPIに慣れる目的で作成されました。
+## Class Diagram
+[Diagram(.svg)](Assets/docs/QQAgentInputOutputDiagram.svg)
+
