@@ -80,7 +80,7 @@ namespace QQAgent.UI.Model
             string planeText = await morphemeHandler.GetReadingAsync(analyzedInput.Morpheme);
             PunSearcher punSearcher = new PunSearcher();
             _longestPun = await punSearcher.GetLongestPun(planeText);
-            return (_longestPun.Length < 4);
+            return (_longestPun.Length > 4);
         }
         public OutputGenerator Generator() => new PunGenerator(_longestPun);
     }
