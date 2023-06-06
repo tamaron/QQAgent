@@ -1,20 +1,16 @@
-# QQAgent
- 
-QQAgentはUnity(C#)製の簡易バーチャルアシスタントアプリケーションです。
+QQAgent
+QQAgent is a simple virtual assistant application developed in Unity (C#).
 
-## DEMO
+DEMO
+Videotogif(1)
 
-![Videotogif(1)](https://user-images.githubusercontent.com/49875900/122636223-fdad0500-d122-11eb-9895-fb73bea790af.gif)
+Videotogif-1
 
+Features
+QQAgent analyzes user input using the morphological analysis engine Mecab and generates responses based on the analysis results. It includes features such as speech input using Google Cloud Speech-To-Text, weather forecast search using OpenWeatherMap, and playful exploration using dynamic programming.
 
-![Videotogif-1](https://user-images.githubusercontent.com/49875900/122632255-a0a65480-d10c-11eb-9535-0198cf44eb86.gif) 
+Dependency
+Unity 2020.3.5f1 (or higher)
 
-## Features
- 
-ユーザーからの入力を形態素解析エンジンMecabで解析し、その結果をもとに応答の生成を行います。Google Cloud Speech-To-Textを利用した音声入力、OpenWeatherMapを利用した天気予報の検索、動的計画法を用いただじゃれ探索などの機能を備えています。
-
-## Dependency
-Unity 2020.3.5f1(以上)
-
-## NOTE
-一般には公開されていないWebAPIを用いて動作しているため、現在ローカルでビルドすることはできません。
+NOTE
+It is currently not possible to build and run the application locally as it relies on web APIs that are not publicly available.
